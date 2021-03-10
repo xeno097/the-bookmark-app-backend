@@ -7,8 +7,9 @@ class AppConfig {
   constructor() {
     dotenv.config();
 
-    this.port = 3000;
-    this.dbConnectionString = process.env.DB_CONNECTION_STRING || '';
+    this.port = Number(process.env.PORT) || 3000;
+    this.dbConnectionString =
+      process.env.DB_CONNECTION_STRING || 'localhost:27017';
   }
 }
 
