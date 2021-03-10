@@ -1,6 +1,8 @@
 import { ApolloServer, gql } from 'apollo-server-express';
+import { DocumentNode } from 'graphql';
+import { GqlCustomExecutionContext } from '../common/interfaces/graphql-custom-context.interface';
 
-const typeDefs = [
+const typeDefs: DocumentNode[] = [
   gql`
     type Query {
       hello: String
@@ -9,7 +11,7 @@ const typeDefs = [
 ];
 
 const apolloServer = new ApolloServer({
-  context: ({ req, res }) => ({
+  context: ({ req, res }): GqlCustomExecutionContext => ({
     req,
     res,
     auth: 'test',
