@@ -11,6 +11,8 @@
     "test": "jest --passWithNoTests"
   },
   "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
     "setupFilesAfterEnv": [
       "./test/setup.jest.ts"
     ]

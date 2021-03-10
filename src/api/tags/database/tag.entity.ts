@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-interface CreateTagInput {
+interface BuildTagInput {
   name: string;
   slug: string;
 }
@@ -11,7 +11,7 @@ interface TagDocument extends mongoose.Document {
 }
 
 interface TagModel extends mongoose.Model<TagDocument> {
-  build(input: CreateTagInput): TagDocument;
+  build(input: BuildTagInput): TagDocument;
 }
 
 export const TagModelName = 'Tag';
@@ -32,7 +32,7 @@ const tagSchema = new mongoose.Schema(
   },
 );
 
-tagSchema.statics.build = (input: CreateTagInput) => {
+tagSchema.statics.build = (input: BuildTagInput) => {
   return new TagModel(input);
 };
 
