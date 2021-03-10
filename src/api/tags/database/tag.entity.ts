@@ -5,7 +5,7 @@ interface BuildTagInput {
   slug: string;
 }
 
-interface TagDocument extends mongoose.Document {
+export interface TagDocument extends mongoose.Document {
   name: string;
   slug: string;
 }
