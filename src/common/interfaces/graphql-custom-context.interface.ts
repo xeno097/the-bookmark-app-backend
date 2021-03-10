@@ -1,7 +1,7 @@
-import e from 'express';
+import { Request, Response } from 'express';
 
 export interface GqlCustomExecutionContext {
-  req: e.Request;
-  res: e.Response;
+  req: Request;
+  res: Response;
   auth: string;
 }
