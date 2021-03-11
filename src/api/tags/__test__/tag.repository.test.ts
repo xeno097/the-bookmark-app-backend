@@ -38,5 +38,21 @@ describe('Tag Repository', () => {
 
       expect(tag.name).toEqual(input.name);
     });
+
+    it('successfully creates 2 tags if they have different names', async () => {
+      const input = {
+        name: 'nodejs',
+      };
+
+      const input2 = {
+        name: 'typescript',
+      };
+
+      const tag1 = await createTag(input);
+      const tag2 = await createTag(input2);
+
+      expect(tag1.name).toEqual(input.name);
+      expect(tag2.name).toEqual(input2.name);
+    });
   });
 });
