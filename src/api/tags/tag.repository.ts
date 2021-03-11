@@ -1,11 +1,12 @@
 import { generateSlug } from '../../common/functions/generate-slug';
 import { TagDocument, TagModel } from './database/tag.entity';
+import { ICreateTagInput } from './interfaces/create-tag-input.interface';
 
 const getOneTag = () => {};
 
 const getAllTags = () => {};
 
-const createTag = async (input: { name: string }): Promise<TagDocument> => {
+const createTag = async (input: ICreateTagInput): Promise<TagDocument> => {
   const { name } = input;
 
   if (name.length === 0) {
