@@ -1,6 +1,5 @@
 import { createTag, getOneTag } from '../tag.repository';
 import mongoose from 'mongoose';
-import { ICreateTagInput } from '../interfaces/create-tag-input.interface';
 import { TagModel } from '../database/tag.entity';
 import { generateSlug } from '../../../common/functions/generate-slug';
 
