@@ -1,8 +1,9 @@
 import slugify from 'slugify';
+import { InvalidFunctionInputError } from '../../errors/invalid-input.error';
 
 export const generateSlug = (input: string[], isUnique = false) => {
   if (input.length === 0) {
-    throw new Error("Input can't be empty");
+    throw new InvalidFunctionInputError();
   }
 
   return '';
