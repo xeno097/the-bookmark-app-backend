@@ -1,3 +1,4 @@
+import { generateSlug } from '../../common/functions/generate-slug';
 import { TagDocument, TagModel } from './database/tag.entity';
 
 const getOneTag = () => {};
@@ -13,7 +14,7 @@ const createTag = async (input: { name: string }): Promise<TagDocument> => {
 
   const tag = TagModel.build({
     name,
-    slug: '',
+    slug: generateSlug([name]),
   });
 
   await tag.save();
