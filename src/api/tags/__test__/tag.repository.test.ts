@@ -1,7 +1,8 @@
-import { createTag, deleteTag, getOneTag } from '../tag.repository';
+import { createTag, deleteTag, getOneTag, updateTag } from '../tag.repository';
 import mongoose from 'mongoose';
 import { TagModel } from '../database/tag.entity';
 import { generateSlug } from '../../../common/functions/generate-slug';
+import { IUpdateTagInput } from '../interfaces/update-tag-input.interface';
 
 describe('Tag Repository', () => {
   const setup = async () => {
@@ -15,7 +16,7 @@ describe('Tag Repository', () => {
     return tag;
   };
 
-  describe('GetOneTag', () => {
+  describe('getOneTag', () => {
     it('throws an error if neither an id or a slug are provided', async (done) => {
       const input = {};
 
@@ -71,7 +72,7 @@ describe('Tag Repository', () => {
     });
   });
 
-  describe('CreateTag', () => {
+  describe('createTag', () => {
     it('throws an error if name is empty', async (done) => {
       const name = '';
 
@@ -123,6 +124,91 @@ describe('Tag Repository', () => {
 
       expect(tag1.name).toEqual(input.name);
       expect(tag2.name).toEqual(input2.name);
+    });
+  });
+
+  describe('updateTag', () => {
+    it('throws an error if given an id of a not exsting tag', async (done) => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const input: IUpdateTagInput = {
+        filter: { id },
+        data: {
+          name: 'a new name',
+        },
+      };
+
+      try {
+        await updateTag(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('throws an error if given an id of a not exsting tag', async (done) => {
+      const slug = 'a-slug-that-does-not-belong-to-any-tag';
+
+      const input: IUpdateTagInput = {
+        filter: { slug },
+        data: {
+          name: 'a new name',
+        },
+      };
+
+      try {
+        await updateTag(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('successfully updates a tag given an id of an already existing one', async () => {
+      const tag = await setup();
+
+      const tags = await TagModel.find({});
+
+      expect(tags.length).toBeGreaterThan(0);
+
+      const input: IUpdateTagInput = {
+        filter: { id: tag.id },
+        data: {
+          name: 'a new name',
+        },
+      };
+
+      const expectedSlug = 'a-new-name';
+
+      await updateTag(input);
+      const updatedTag = await TagModel.findById(tag.id);
+
+      expect(updatedTag?.name).toEqual(input.data.name);
+      expect(updatedTag?.slug).toEqual(expectedSlug);
+    });
+
+    it('successfully updates a tag given a slug of an already existing one', async () => {
+      const tag = await setup();
+
+      const tags = await TagModel.find({});
+
+      expect(tags.length).toBeGreaterThan(0);
+
+      const input: IUpdateTagInput = {
+        filter: { slug: tag.slug },
+        data: {
+          name: 'a new name',
+        },
+      };
+      const expectedSlug = 'a-new-name';
+
+      await updateTag(input);
+      const updatedTag = await TagModel.findById(tag.id);
+
+      expect(updatedTag?.name).toEqual(input.data.name);
+      expect(updatedTag?.slug).toEqual(expectedSlug);
     });
   });
 
