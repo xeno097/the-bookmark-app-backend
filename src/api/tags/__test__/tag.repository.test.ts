@@ -4,18 +4,18 @@ import { TagModel } from '../database/tag.entity';
 import { generateSlug } from '../../../common/functions/generate-slug';
 
 describe('Tag Repository', () => {
+  const setup = async () => {
+    const tag = TagModel.build({
+      name: 'nodejs',
+      slug: generateSlug(['nodejs']),
+    });
+
+    await tag.save();
+
+    return tag;
+  };
+
   describe('GetOneTag', () => {
-    const setup = async () => {
-      const tag = TagModel.build({
-        name: 'nodejs',
-        slug: generateSlug(['nodejs']),
-      });
-
-      await tag.save();
-
-      return tag;
-    };
-
     it('throws an error if neither an id or a slug are provided', async (done) => {
       const input = {};
 
