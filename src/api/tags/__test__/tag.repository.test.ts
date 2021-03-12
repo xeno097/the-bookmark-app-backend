@@ -125,4 +125,14 @@ describe('Tag Repository', () => {
       expect(tag2.name).toEqual(input2.name);
     });
   });
+
+  describe('deleteTag', () => {
+    it("throws an error if it can't find the tag given a valid id", async () => {});
+
+    it("throws an error if it can't find a tag given a slug", () => {});
+
+    it('successfully deletes a tag given an id of an already existing tag', () => {});
+
+    it('successfully deletes a tag given a slug of an already existing tag', () => {});
+  });
 });
