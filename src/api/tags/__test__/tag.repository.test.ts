@@ -1,14 +1,23 @@
-import { createTag, deleteTag, getOneTag, updateTag } from '../tag.repository';
+import {
+  createTag,
+  deleteTag,
+  getAllTags,
+  getOneTag,
+  updateTag,
+} from '../tag.repository';
 import mongoose from 'mongoose';
 import { TagModel } from '../database/tag.entity';
 import { generateSlug } from '../../../common/functions/generate-slug';
 import { IUpdateTagInput } from '../interfaces/update-tag-input.interface';
+import crypto from 'crypto';
 
 describe('Tag Repository', () => {
   const setup = async () => {
+    const name = crypto.randomBytes(5).toString('hex');
+
     const tag = TagModel.build({
-      name: 'nodejs',
-      slug: generateSlug(['nodejs']),
+      name: name,
+      slug: generateSlug([name]),
     });
 
     await tag.save();
@@ -69,6 +78,37 @@ describe('Tag Repository', () => {
       expect(foundTag.id).toEqual(tag.id);
       expect(foundTag.name).toEqual(tag.name);
       expect(foundTag.slug).toEqual(tag.slug);
+    });
+  });
+
+  describe('getAllTags', () => {
+    it('returns an empty array if there are no entries in the db', async () => {
+      const tags = await TagModel.find({});
+
+      expect(tags.length).toEqual(0);
+
+      const getAllTagsResult = await getAllTags();
+
+      expect(getAllTagsResult.length).toEqual(0);
+      expect(getAllTagsResult).toBeInstanceOf(Array);
+    });
+
+    it('returns an array that has the same length of the number of tags stored in the db', async () => {
+      const tags = await TagModel.find({});
+
+      expect(tags.length).toEqual(0);
+
+      const tag = await setup();
+      const tag1 = await setup();
+      const tag2 = await setup();
+
+      const getAllTagsResult = await getAllTags();
+
+      expect(getAllTagsResult.length).toEqual(3);
+      expect(getAllTagsResult).toBeInstanceOf(Array);
+      expect(getAllTagsResult[0].id).toEqual(tag.id);
+      expect(getAllTagsResult[1].id).toEqual(tag1.id);
+      expect(getAllTagsResult[2].id).toEqual(tag2.id);
     });
   });
 
