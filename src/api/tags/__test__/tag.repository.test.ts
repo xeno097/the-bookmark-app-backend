@@ -126,6 +126,8 @@ describe('Tag Repository', () => {
     });
   });
 
+  describe('updateTag', () => {});
+
   describe('deleteTag', () => {
     it("throws an error if it can't find the tag given a valid id", async (done) => {
       const id = mongoose.Types.ObjectId().toHexString();

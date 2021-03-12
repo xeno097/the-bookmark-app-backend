@@ -50,7 +50,10 @@ const createTag = async (input: ICreateTagInput): Promise<TagDocument> => {
   return tag;
 };
 
-const updateTag = () => {};
+const updateTag = (input: {
+  filter: { id: string };
+  data: { name: string };
+}) => {};
 
 const deleteTag = async (input: IGetOneTagInput): Promise<TagDocument> => {
   const tag = await getOneTag(input);
