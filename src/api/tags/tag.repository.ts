@@ -52,6 +52,12 @@ const createTag = async (input: ICreateTagInput): Promise<TagDocument> => {
 
 const updateTag = () => {};
 
-const deleteTag = () => {};
+const deleteTag = async (input: IGetOneTagInput): Promise<TagDocument> => {
+  const tag = await getOneTag(input);
+
+  await TagModel.findByIdAndDelete(tag.id);
+
+  return tag;
+};
 
 export { getOneTag, getAllTags, createTag, updateTag, deleteTag };
