@@ -1,4 +1,4 @@
-import { createTag, getOneTag } from '../tag.repository';
+import { createTag, deleteTag, getOneTag } from '../tag.repository';
 import mongoose from 'mongoose';
 import { TagModel } from '../database/tag.entity';
 import { generateSlug } from '../../../common/functions/generate-slug';
@@ -127,12 +127,60 @@ describe('Tag Repository', () => {
   });
 
   describe('deleteTag', () => {
-    it("throws an error if it can't find the tag given a valid id", async () => {});
+    it("throws an error if it can't find the tag given a valid id", async (done) => {
+      const id = mongoose.Types.ObjectId().toHexString();
 
-    it("throws an error if it can't find a tag given a slug", () => {});
+      try {
+        await deleteTag({ id });
+      } catch (error) {
+        return done();
+      }
 
-    it('successfully deletes a tag given an id of an already existing tag', () => {});
+      throw new Error('Test failed');
+    });
 
-    it('successfully deletes a tag given a slug of an already existing tag', () => {});
+    it("throws an error if it can't find a tag given a slug", async (done) => {
+      const slug = 'a-slug-of-a-non-existing-tag';
+
+      try {
+        await deleteTag({ slug });
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('successfully deletes a tag given an id of an already existing tag', async () => {
+      const tag = await setup();
+
+      const tagsBeforeDelete = await TagModel.find({});
+
+      expect(tagsBeforeDelete.length).toEqual(1);
+
+      const deletedTag = await deleteTag({ id: tag.id });
+
+      const tagsAfterDelete = await TagModel.find({});
+
+      expect(tagsAfterDelete.length).toEqual(0);
+      expect(deletedTag.id).toEqual(tag.id);
+      expect(deletedTag.slug).toEqual(tag.slug);
+    });
+
+    it('successfully deletes a tag given a slug of an already existing tag', async () => {
+      const tag = await setup();
+
+      const tagsBeforeDelete = await TagModel.find({});
+
+      expect(tagsBeforeDelete.length).toEqual(1);
+
+      const deletedTag = await deleteTag({ slug: tag.slug });
+
+      const tagsAfterDelete = await TagModel.find({});
+
+      expect(tagsAfterDelete.length).toEqual(0);
+      expect(deletedTag.id).toEqual(tag.id);
+      expect(deletedTag.slug).toEqual(tag.slug);
+    });
   });
 });
