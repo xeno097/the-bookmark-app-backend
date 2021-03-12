@@ -72,6 +72,8 @@ describe('Tag Repository', () => {
     });
   });
 
+  describe('getAllTags', () => {});
+
   describe('createTag', () => {
     it('throws an error if name is empty', async (done) => {
       const name = '';
