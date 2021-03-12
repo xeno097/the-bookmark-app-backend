@@ -32,7 +32,11 @@ const getOneTag = async (input: IGetOneTagInput): Promise<TagDocument> => {
   return tag;
 };
 
-const getAllTags = () => {};
+const getAllTags = async (): Promise<TagDocument[]> => {
+  const tags = await TagModel.find({});
+
+  return tags;
+};
 
 const createTag = async (input: ICreateTagInput): Promise<TagDocument> => {
   const { name } = input;
