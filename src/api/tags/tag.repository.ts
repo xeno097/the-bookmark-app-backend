@@ -4,6 +4,7 @@ import { NotFoundError } from '../../errors/not-found.error';
 import { TagDocument, TagModel } from './database/tag.entity';
 import { ICreateTagInput } from './interfaces/create-tag-input.interface';
 import { IGetOneTagInput } from './interfaces/get-one-tag-input.interface';
+import { IUpdateTagInput } from './interfaces/update-tag-input.interface';
 
 const getOneTag = async (input: IGetOneTagInput): Promise<TagDocument> => {
   const { id, slug } = input;
@@ -50,10 +51,21 @@ const createTag = async (input: ICreateTagInput): Promise<TagDocument> => {
   return tag;
 };
 
-const updateTag = (input: {
-  filter: { id: string };
-  data: { name: string };
-}) => {};
+const updateTag = async (input: IUpdateTagInput): Promise<TagDocument> => {
+  const { data, filter } = input;
+
+  const tag = await getOneTag(filter);
+
+  const slug = generateSlug([data.name]);
+
+  const updatePayload = { name: data.name, slug };
+
+  tag.set(updatePayload);
+
+  await tag.save();
+
+  return tag;
+};
 
 const deleteTag = async (input: IGetOneTagInput): Promise<TagDocument> => {
   const tag = await getOneTag(input);
