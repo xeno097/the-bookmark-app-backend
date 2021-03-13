@@ -148,4 +148,10 @@ describe('TagResolver', () => {
       expect(queryResult.data.tags).toBeInstanceOf(Array);
     });
   });
+
+  describe('createTag', () => {});
+
+  describe('updateTag', () => {});
+
+  describe('deleteTag', () => {});
 });
