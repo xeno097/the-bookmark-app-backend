@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import { IGetOneTagInput } from '../interfaces/get-one-tag-input.interface';
 import { gql } from 'apollo-server-express';
 import { ICreateTagInput } from '../interfaces/create-tag-input.interface';
+import { IUpdateTagInput } from '../interfaces/update-tag-input.interface';
 
 describe('TagResolver', () => {
   const { mutate, query } = createTestClient(apolloServer);
@@ -248,7 +249,108 @@ describe('TagResolver', () => {
     });
   });
 
-  describe('updateTag', () => {});
+  describe('updateTag', () => {
+    const UPDATE_TAG = gql`
+      mutation($input: UpdateTagInput!) {
+        updateTag(input: $input) {
+          id
+          name
+          slug
+        }
+      }
+    `;
+
+    it('throws an error if it cannot find the tag with the given id', async () => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const input: IUpdateTagInput = {
+        filter: { id },
+        data: {
+          name: 'a new name',
+        },
+      };
+
+      const mutationResult = await mutate({
+        mutation: UPDATE_TAG,
+        variables: { input },
+      });
+
+      expect(mutationResult.errors).toBeDefined();
+      expect(mutationResult.errors?.length).toBeGreaterThan(0);
+    });
+
+    it('throws an error if it cannot find the tag with the given slug', async () => {
+      const slug = 'a-non-existing-slug';
+
+      const input: IUpdateTagInput = {
+        filter: { slug },
+        data: {
+          name: 'a new name',
+        },
+      };
+
+      const mutationResult = await mutate({
+        mutation: UPDATE_TAG,
+        variables: { input },
+      });
+
+      expect(mutationResult.errors).toBeDefined();
+      expect(mutationResult.errors?.length).toBeGreaterThan(0);
+    });
+
+    it('successfully updates a tag given an id of an already existing one and a valid name', async () => {
+      const tag = await setup();
+
+      const tags = await TagModel.find({});
+
+      expect(tags.length).toBeGreaterThan(0);
+
+      const input: IUpdateTagInput = {
+        filter: { id: tag.id },
+        data: {
+          name: 'a new name',
+        },
+      };
+      const expectedSlug = 'a-new-name';
+
+      const mutationResult = await mutate({
+        mutation: UPDATE_TAG,
+        variables: { input },
+      });
+
+      expect(mutationResult.errors).toBeUndefined();
+      expect(mutationResult.data).toBeDefined();
+      expect(mutationResult.data.updateTag.id).toEqual(input.filter.id);
+      expect(mutationResult.data.updateTag.name).toEqual(input.data.name);
+      expect(mutationResult.data.updateTag.slug).toEqual(expectedSlug);
+    });
+
+    it('successfully updates a tag given a slug of an already existing one and a valid name', async () => {
+      const tag = await setup();
+
+      const tags = await TagModel.find({});
+
+      expect(tags.length).toBeGreaterThan(0);
+
+      const input: IUpdateTagInput = {
+        filter: { slug: tag.slug },
+        data: {
+          name: 'a new name',
+        },
+      };
+      const expectedSlug = 'a-new-name';
+
+      const mutationResult = await mutate({
+        mutation: UPDATE_TAG,
+        variables: { input },
+      });
+
+      expect(mutationResult.errors).toBeUndefined();
+      expect(mutationResult.data).toBeDefined();
+      expect(mutationResult.data.updateTag.name).toEqual(input.data.name);
+      expect(mutationResult.data.updateTag.slug).toEqual(expectedSlug);
+    });
+  });
 
   describe('deleteTag', () => {});
 });
