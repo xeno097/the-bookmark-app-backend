@@ -6,6 +6,7 @@ import crypto from 'crypto';
 import mongoose from 'mongoose';
 import { IGetOneTagInput } from '../interfaces/get-one-tag-input.interface';
 import { gql } from 'apollo-server-express';
+import { ICreateTagInput } from '../interfaces/create-tag-input.interface';
 
 describe('TagResolver', () => {
   const { mutate, query } = createTestClient(apolloServer);
@@ -149,7 +150,103 @@ describe('TagResolver', () => {
     });
   });
 
-  describe('createTag', () => {});
+  describe('createTag', () => {
+    const CREATE_TAG = gql`
+      mutation($input: CreateTagInput!) {
+        createTag(input: $input) {
+          id
+          name
+          slug
+        }
+      }
+    `;
+
+    it('throws an error if the name property is empty', async () => {
+      const input: ICreateTagInput = {
+        name: '',
+      };
+
+      const mutationResult = await mutate({
+        mutation: CREATE_TAG,
+        variables: { input },
+      });
+
+      expect(mutationResult.errors?.length).toBeGreaterThan(0);
+    });
+
+    it('throws an error if a user attempts to create a tag with a name already in use', async () => {
+      const tag = await setup();
+
+      const input: ICreateTagInput = {
+        name: tag.name,
+      };
+
+      const mutationResult = await mutate({
+        mutation: CREATE_TAG,
+        variables: { input },
+      });
+
+      expect(mutationResult.errors?.length).toBeGreaterThan(0);
+    });
+
+    it('successfully creates a tag given a valid input', async () => {
+      const input: ICreateTagInput = {
+        name: 'typescript',
+      };
+
+      const mutationResult = await mutate({
+        mutation: CREATE_TAG,
+        variables: { input },
+      });
+
+      expect(mutationResult.errors).toBeUndefined();
+      expect(mutationResult.data).toBeDefined();
+
+      const checkTag = await TagModel.findById(
+        mutationResult.data.createTag.id,
+      );
+
+      expect(checkTag?.name).toEqual(input.name);
+    });
+
+    it('successfully creates two tags if the have a different name', async () => {
+      const input: ICreateTagInput = {
+        name: 'typescript',
+      };
+
+      const input1: ICreateTagInput = {
+        name: 'nodejs',
+      };
+
+      const mutationResult = await mutate({
+        mutation: CREATE_TAG,
+        variables: { input },
+      });
+
+      expect(mutationResult.errors).toBeUndefined();
+      expect(mutationResult.data).toBeDefined();
+
+      const checkTag = await TagModel.findById(
+        mutationResult.data.createTag.id,
+      );
+
+      expect(checkTag?.name).toEqual(input.name);
+
+      const mutationResult1 = await mutate({
+        mutation: CREATE_TAG,
+        variables: { input: input1 },
+      });
+
+      expect(mutationResult1.errors).toBeUndefined();
+      expect(mutationResult1.data).toBeDefined();
+
+      const checkTag1 = await TagModel.findById(
+        mutationResult1.data.createTag.id,
+      );
+
+      expect(checkTag1?.name).toEqual(input1.name);
+    });
+  });
 
   describe('updateTag', () => {});
 
