@@ -210,7 +210,7 @@ describe('TagResolver', () => {
       expect(checkTag?.name).toEqual(input.name);
     });
 
-    it('successfully creates two tags if the have a different name', async () => {
+    it('successfully creates two tags if they have different names', async () => {
       const input: ICreateTagInput = {
         name: 'typescript',
       };
@@ -260,7 +260,7 @@ describe('TagResolver', () => {
       }
     `;
 
-    it('throws an error if it cannot find the tag with the given id', async () => {
+    it('throws an error if given an id, it does not find a tag', async () => {
       const id = mongoose.Types.ObjectId().toHexString();
 
       const input: IUpdateTagInput = {
@@ -279,7 +279,7 @@ describe('TagResolver', () => {
       expect(mutationResult.errors?.length).toBeGreaterThan(0);
     });
 
-    it('throws an error if it cannot find the tag with the given slug', async () => {
+    it('throws an error if given a slug, it does not find a tag', async () => {
       const slug = 'a-non-existing-slug';
 
       const input: IUpdateTagInput = {
@@ -298,7 +298,7 @@ describe('TagResolver', () => {
       expect(mutationResult.errors?.length).toBeGreaterThan(0);
     });
 
-    it('successfully updates a tag given an id of an already existing one and a valid name', async () => {
+    it('successfully updates if given a valid id and a non empty name', async () => {
       const tag = await setup();
 
       const tags = await TagModel.find({});
@@ -325,7 +325,7 @@ describe('TagResolver', () => {
       expect(mutationResult.data.updateTag.slug).toEqual(expectedSlug);
     });
 
-    it('successfully updates a tag given a slug of an already existing one and a valid name', async () => {
+    it('successfully updates if given a valid slug and a non emtpy name', async () => {
       const tag = await setup();
 
       const tags = await TagModel.find({});
@@ -363,7 +363,7 @@ describe('TagResolver', () => {
       }
     `;
 
-    it("throws an error if it can't find the tag given a valid id", async () => {
+    it("throws an error if given an id, it can't find a tag", async () => {
       const id = mongoose.Types.ObjectId().toHexString();
 
       const input: IGetOneTagInput = {
@@ -378,7 +378,7 @@ describe('TagResolver', () => {
       expect(queryResult.errors?.length).toBeGreaterThan(0);
     });
 
-    it("throws an error if it can't find the tag given a valid slug", async () => {
+    it("throws an error if given a slug, it can't find a tag", async () => {
       const slug = 'a-non-existing-slug';
 
       const input: IGetOneTagInput = {
