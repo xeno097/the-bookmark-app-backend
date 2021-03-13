@@ -1,5 +1,5 @@
 import { ApolloServer, gql } from 'apollo-server-express';
-import { tagQueries, createTag } from '../api/tags/tag.resolver';
+import { tagQueries, createTag, updateTag } from '../api/tags/tag.resolver';
 import { GqlCustomExecutionContext } from '../common/interfaces/graphql-custom-context.interface';
 
 const typeDefs = gql`
@@ -18,6 +18,15 @@ const typeDefs = gql`
     name: String!
   }
 
+  input UpdateTagPayload {
+    name: String!
+  }
+
+  input UpdateTagInput {
+    filter: GetOneTagInput!
+    data: UpdateTagPayload!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
@@ -25,6 +34,7 @@ const typeDefs = gql`
 
   type Mutation {
     createTag(input: CreateTagInput!): Tag!
+    updateTag(input: UpdateTagInput!): Tag!
   }
 `;
 
@@ -42,6 +52,7 @@ const apolloServer = new ApolloServer({
     },
     Mutation: {
       createTag,
+      updateTag,
     },
   },
 });

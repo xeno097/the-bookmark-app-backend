@@ -3,10 +3,12 @@ import { TagDocument } from './database/tag.entity';
 import { ICreateTagInput } from './interfaces/create-tag-input.interface';
 import { IGetOneTagInput } from './interfaces/get-one-tag-input.interface';
 import { TagMutations, TagQueries } from './interfaces/tag-resolver.interface';
+import { IUpdateTagInput } from './interfaces/update-tag-input.interface';
 import {
   getAllTags,
   getOneTag,
   createTag as createTagRepo,
+  updateTag as updateTagRepo,
 } from './tag.repository';
 
 const tag = async (
@@ -40,6 +42,17 @@ const createTag = async (
   return await createTagRepo(input);
 };
 
+const updateTag = async (
+  parent: any,
+  args: { input: IUpdateTagInput },
+  context: GqlCustomExecutionContext,
+  info: any,
+) => {
+  const { input } = args;
+
+  return await updateTagRepo(input);
+};
+
 const tagQueries: TagQueries = {
   tag,
   tags,
@@ -47,4 +60,4 @@ const tagQueries: TagQueries = {
 
 export { tagQueries };
 
-export { createTag };
+export { createTag, updateTag };
