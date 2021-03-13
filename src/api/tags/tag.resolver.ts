@@ -2,8 +2,12 @@ import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custo
 import { TagDocument } from './database/tag.entity';
 import { ICreateTagInput } from './interfaces/create-tag-input.interface';
 import { IGetOneTagInput } from './interfaces/get-one-tag-input.interface';
-import { TagQueries } from './interfaces/tag-resolver.interface';
-import { getAllTags, getOneTag } from './tag.repository';
+import { TagMutations, TagQueries } from './interfaces/tag-resolver.interface';
+import {
+  getAllTags,
+  getOneTag,
+  createTag as createTagRepo,
+} from './tag.repository';
 
 const tag = async (
   parent: any,
@@ -30,7 +34,11 @@ const createTag = async (
   args: { input: ICreateTagInput },
   context: GqlCustomExecutionContext,
   info: any,
-) => {};
+) => {
+  const { input } = args;
+
+  return await createTagRepo(input);
+};
 
 const tagQueries: TagQueries = {
   tag,
@@ -38,3 +46,5 @@ const tagQueries: TagQueries = {
 };
 
 export { tagQueries };
+
+export { createTag };
