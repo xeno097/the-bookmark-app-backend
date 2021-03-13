@@ -1,14 +1,24 @@
 import { ApolloServer, gql } from 'apollo-server-express';
-import { DocumentNode } from 'graphql';
+import { tagQueries } from '../api/tags/tag.resolver';
 import { GqlCustomExecutionContext } from '../common/interfaces/graphql-custom-context.interface';
 
-const typeDefs: DocumentNode[] = [
-  gql`
-    type Query {
-      hello: String
-    }
-  `,
-];
+const typeDefs = gql`
+  type Tag {
+    id: ID!
+    name: String!
+    slug: String!
+  }
+
+  input GetOneTagInput {
+    id: ID
+    slug: String
+  }
+
+  type Query {
+    tag(input: GetOneTagInput!): Tag!
+    tags: [Tag]
+  }
+`;
 
 const apolloServer = new ApolloServer({
   context: ({ req, res }): GqlCustomExecutionContext => ({
@@ -20,11 +30,7 @@ const apolloServer = new ApolloServer({
   typeDefs,
   resolvers: {
     Query: {
-      hello: (parent, args, context, info) => {
-        console.log(args);
-        console.log(context);
-        return 'Henlo';
-      },
+      ...tagQueries,
     },
   },
 });
