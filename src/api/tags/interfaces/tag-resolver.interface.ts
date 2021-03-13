@@ -31,11 +31,11 @@ export interface TagMutations {
     args: { input: IUpdateTagInput },
     context: GqlCustomExecutionContext,
     info: any,
-  ) => Promise<TagDocument[]>;
+  ) => Promise<TagDocument>;
   deleteTag: (
     parent: any,
     args: { input: IGetOneTagInput },
     context: GqlCustomExecutionContext,
     info: any,
-  ) => Promise<TagDocument[]>;
+  ) => Promise<TagDocument>;
 }

@@ -9,6 +9,7 @@ import {
   getOneTag,
   createTag as createTagRepo,
   updateTag as updateTagRepo,
+  deleteTag as deleteTagRepo,
 } from './tag.repository';
 
 const tag = async (
@@ -36,7 +37,7 @@ const createTag = async (
   args: { input: ICreateTagInput },
   context: GqlCustomExecutionContext,
   info: any,
-) => {
+): Promise<TagDocument> => {
   const { input } = args;
 
   return await createTagRepo(input);
@@ -47,10 +48,21 @@ const updateTag = async (
   args: { input: IUpdateTagInput },
   context: GqlCustomExecutionContext,
   info: any,
-) => {
+): Promise<TagDocument> => {
   const { input } = args;
 
   return await updateTagRepo(input);
+};
+
+const deleteTag = async (
+  parent: any,
+  args: { input: IGetOneTagInput },
+  context: GqlCustomExecutionContext,
+  info: any,
+): Promise<TagDocument> => {
+  const { input } = args;
+
+  return await deleteTagRepo(input);
 };
 
 const tagQueries: TagQueries = {
@@ -58,6 +70,10 @@ const tagQueries: TagQueries = {
   tags,
 };
 
-export { tagQueries };
+const tagMutations: TagMutations = {
+  createTag,
+  updateTag,
+  deleteTag,
+};
 
-export { createTag, updateTag };
+export { tagQueries, tagMutations };
