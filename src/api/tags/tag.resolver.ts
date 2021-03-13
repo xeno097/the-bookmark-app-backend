@@ -2,7 +2,7 @@ import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custo
 import { TagDocument } from './database/tag.entity';
 import { IGetOneTagInput } from './interfaces/get-one-tag-input.interface';
 import { TagQueries } from './interfaces/tag-resolver.interface';
-import { getOneTag } from './tag.repository';
+import { getAllTags, getOneTag } from './tag.repository';
 
 const tag = async (
   parent: any,
@@ -21,7 +21,7 @@ const tags = async (
   context: GqlCustomExecutionContext,
   info: any,
 ): Promise<TagDocument[]> => {
-  return [];
+  return await getAllTags();
 };
 
 const tagQueries: TagQueries = {
