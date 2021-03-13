@@ -352,5 +352,81 @@ describe('TagResolver', () => {
     });
   });
 
-  describe('deleteTag', () => {});
+  describe('deleteTag', () => {
+    const DELETE_TAG = gql`
+      mutation($input: GetOneTagInput!) {
+        deleteTag(input: $input) {
+          id
+          name
+          slug
+        }
+      }
+    `;
+
+    it("throws an error if it can't find the tag given a valid id", async () => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const input: IGetOneTagInput = {
+        id,
+      };
+
+      const queryResult = await query({
+        query: DELETE_TAG,
+        variables: { input },
+      });
+
+      expect(queryResult.errors?.length).toBeGreaterThan(0);
+    });
+
+    it("throws an error if it can't find the tag given a valid slug", async () => {
+      const slug = 'a-non-existing-slug';
+
+      const input: IGetOneTagInput = {
+        slug,
+      };
+
+      const queryResult = await query({
+        query: DELETE_TAG,
+        variables: { input },
+      });
+
+      expect(queryResult.errors?.length).toBeGreaterThan(0);
+    });
+
+    it('successfully deletes a tag given a valid id', async () => {
+      const testTag = await setup();
+
+      const input: IGetOneTagInput = {
+        id: testTag.id,
+      };
+
+      const queryResult = await query({
+        query: DELETE_TAG,
+        variables: { input },
+      });
+
+      expect(queryResult.data).toBeDefined();
+      expect(queryResult.data.deleteTag.id).toEqual(testTag.id);
+      expect(queryResult.data.deleteTag.slug).toEqual(testTag.slug);
+      expect(queryResult.data.deleteTag.name).toEqual(testTag.name);
+    });
+
+    it('successfully deletes a tag given a valid slug', async () => {
+      const testTag = await setup();
+
+      const input: IGetOneTagInput = {
+        slug: testTag.slug,
+      };
+
+      const queryResult = await query({
+        query: DELETE_TAG,
+        variables: { input },
+      });
+
+      expect(queryResult.data).toBeDefined();
+      expect(queryResult.data.deleteTag.id).toEqual(testTag.id);
+      expect(queryResult.data.deleteTag.slug).toEqual(testTag.slug);
+      expect(queryResult.data.deleteTag.name).toEqual(testTag.name);
+    });
+  });
 });
