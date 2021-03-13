@@ -99,4 +99,53 @@ describe('TagResolver', () => {
       expect(queryResult.data.tag.name).toEqual(testTag.name);
     });
   });
+
+  describe('tags', () => {
+    const TAGS_QUERY = gql`
+      query {
+        tags {
+          id
+          name
+          slug
+        }
+      }
+    `;
+
+    it('returns an empty array if there are no tags in the databse', async () => {
+      const tags = await TagModel.find({});
+
+      expect(tags.length).toEqual(0);
+
+      const queryResult = await query({
+        query: TAGS_QUERY,
+      });
+
+      expect(queryResult.errors).toBeUndefined();
+      expect(queryResult.data).toBeDefined();
+      expect(queryResult.data.tags.length).toEqual(0);
+      expect(queryResult.data.tags).toBeInstanceOf(Array);
+    });
+
+    it('returns all the tags created in the database', async () => {
+      const tags = await TagModel.find({});
+
+      expect(tags.length).toEqual(0);
+
+      const tag = await setup();
+      const tag1 = await setup();
+      const tag2 = await setup();
+
+      const queryResult = await query({
+        query: TAGS_QUERY,
+      });
+
+      expect(queryResult.errors).toBeUndefined();
+      expect(queryResult.data).toBeDefined();
+      expect(queryResult.data.tags.length).toEqual(3);
+      expect(queryResult.data.tags[0].id).toEqual(tag.id);
+      expect(queryResult.data.tags[1].id).toEqual(tag1.id);
+      expect(queryResult.data.tags[2].id).toEqual(tag2.id);
+      expect(queryResult.data.tags).toBeInstanceOf(Array);
+    });
+  });
 });
