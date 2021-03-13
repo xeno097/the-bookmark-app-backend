@@ -152,7 +152,7 @@ describe('TagResolver', () => {
   });
 
   describe('createTag', () => {
-    const CREATE_TAG = gql`
+    const CREATE_TAG_MUTATION = gql`
       mutation($input: CreateTagInput!) {
         createTag(input: $input) {
           id
@@ -168,7 +168,7 @@ describe('TagResolver', () => {
       };
 
       const mutationResult = await mutate({
-        mutation: CREATE_TAG,
+        mutation: CREATE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -183,7 +183,7 @@ describe('TagResolver', () => {
       };
 
       const mutationResult = await mutate({
-        mutation: CREATE_TAG,
+        mutation: CREATE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -196,7 +196,7 @@ describe('TagResolver', () => {
       };
 
       const mutationResult = await mutate({
-        mutation: CREATE_TAG,
+        mutation: CREATE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -220,7 +220,7 @@ describe('TagResolver', () => {
       };
 
       const mutationResult = await mutate({
-        mutation: CREATE_TAG,
+        mutation: CREATE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -234,7 +234,7 @@ describe('TagResolver', () => {
       expect(checkTag?.name).toEqual(input.name);
 
       const mutationResult1 = await mutate({
-        mutation: CREATE_TAG,
+        mutation: CREATE_TAG_MUTATION,
         variables: { input: input1 },
       });
 
@@ -250,7 +250,7 @@ describe('TagResolver', () => {
   });
 
   describe('updateTag', () => {
-    const UPDATE_TAG = gql`
+    const UPDATE_TAG_MUTATION = gql`
       mutation($input: UpdateTagInput!) {
         updateTag(input: $input) {
           id
@@ -271,7 +271,7 @@ describe('TagResolver', () => {
       };
 
       const mutationResult = await mutate({
-        mutation: UPDATE_TAG,
+        mutation: UPDATE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -290,7 +290,7 @@ describe('TagResolver', () => {
       };
 
       const mutationResult = await mutate({
-        mutation: UPDATE_TAG,
+        mutation: UPDATE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -314,7 +314,7 @@ describe('TagResolver', () => {
       const expectedSlug = 'a-new-name';
 
       const mutationResult = await mutate({
-        mutation: UPDATE_TAG,
+        mutation: UPDATE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -341,7 +341,7 @@ describe('TagResolver', () => {
       const expectedSlug = 'a-new-name';
 
       const mutationResult = await mutate({
-        mutation: UPDATE_TAG,
+        mutation: UPDATE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -353,7 +353,7 @@ describe('TagResolver', () => {
   });
 
   describe('deleteTag', () => {
-    const DELETE_TAG = gql`
+    const DELETE_TAG_MUTATION = gql`
       mutation($input: GetOneTagInput!) {
         deleteTag(input: $input) {
           id
@@ -371,7 +371,7 @@ describe('TagResolver', () => {
       };
 
       const queryResult = await query({
-        query: DELETE_TAG,
+        query: DELETE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -386,7 +386,7 @@ describe('TagResolver', () => {
       };
 
       const queryResult = await query({
-        query: DELETE_TAG,
+        query: DELETE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -401,7 +401,7 @@ describe('TagResolver', () => {
       };
 
       const queryResult = await query({
-        query: DELETE_TAG,
+        query: DELETE_TAG_MUTATION,
         variables: { input },
       });
 
@@ -419,7 +419,7 @@ describe('TagResolver', () => {
       };
 
       const queryResult = await query({
-        query: DELETE_TAG,
+        query: DELETE_TAG_MUTATION,
         variables: { input },
       });
 
