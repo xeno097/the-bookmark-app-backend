@@ -94,8 +94,19 @@ describe('UserRepository', () => {
   });
 
   describe('signIn', () => {
+    const createNewUser = async () => {
+      const user = await signUp({
+        confirmPassword: '1234567890',
+        password: '1234567890',
+        email: 'test@test.com',
+        username: 'testuser',
+      });
+
+      return user;
+    };
+
     it('throws an error if an invalid username is used', async (done) => {
-      const user = await setup();
+      const user = await createNewUser();
 
       const input: ISignInInput = {
         password: '1234567890',
@@ -112,7 +123,7 @@ describe('UserRepository', () => {
     });
 
     it('throws an error if an invalid password is used', async (done) => {
-      const user = await setup();
+      const user = await createNewUser();
 
       const input: ISignInInput = {
         password: '12345678',
@@ -129,10 +140,10 @@ describe('UserRepository', () => {
     });
 
     it('returns a user given a matching username and password', async () => {
-      const user = await setup();
+      const user = await createNewUser();
 
       const input: ISignInInput = {
-        password: '12345678',
+        password: '1234567890',
         username: user.username,
       };
 

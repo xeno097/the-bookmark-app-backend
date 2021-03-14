@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { PasswordManager } from '../utils/password.util';
 
 interface BuildUserInput {
   username: string;
@@ -9,6 +10,7 @@ interface BuildUserInput {
 export interface UserDocument extends mongoose.Document {
   username: string;
   email: string;
+  password: string;
 }
 
 interface UserModel extends mongoose.Model<UserDocument> {
@@ -36,7 +38,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toObject: {
+    toJSON: {
       transform(doc, ret) {
         delete ret.password;
       },

@@ -51,6 +51,25 @@ const signUp = async (input: ISignUpInput): Promise<UserDocument> => {
   return newUser;
 };
 
-const signIn = async (input: ISignInInput): Promise<any> => {};
+const signIn = async (input: ISignInInput): Promise<UserDocument> => {
+  const { password, username } = input;
+
+  const user = await UserModel.findOne({ username });
+
+  if (!user) {
+    throw new InvalidUserInputError();
+  }
+
+  const validatePassword = await PasswordManager.compare(
+    user.password,
+    password,
+  );
+
+  if (!validatePassword) {
+    throw new InvalidUserInputError();
+  }
+
+  return user;
+};
 
 export { signUp, signIn };
