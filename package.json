@@ -30,6 +30,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "graphql": "^15.5.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.19",
     "slugify": "^1.4.7",
     "ts-node-dev": "^1.1.6",
