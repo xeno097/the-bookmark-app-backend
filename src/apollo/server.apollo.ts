@@ -27,6 +27,11 @@ const typeDefs = gql`
     data: UpdateTagPayload!
   }
 
+  type User {
+    username: String!
+    email: String!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
