@@ -2,6 +2,7 @@ import { IErrorPayload } from '../../common/interfaces/error-payload.interface';
 import { InvalidUserInputError } from '../../errors/invalid-user-input.error';
 import { UserDocument, UserModel } from './database/user.entity';
 import { ISignUpInput } from './interfaces/sign-up-input.interface';
+import { PasswordManager } from './utils/password.util';
 
 const signUp = async (input: ISignUpInput): Promise<UserDocument> => {
   const { confirmPassword, email, password, username } = input;
@@ -36,9 +37,11 @@ const signUp = async (input: ISignUpInput): Promise<UserDocument> => {
     throw new InvalidUserInputError(errors);
   }
 
+  const hashedPassword = await PasswordManager.toHash(password);
+
   const newUser = UserModel.build({
     email,
-    password,
+    password: hashedPassword,
     username,
   });
 
