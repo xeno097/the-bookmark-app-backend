@@ -25,6 +25,10 @@ describe('Tag Repository', () => {
     return tag;
   };
 
+  afterEach(async () => {
+    await TagModel.deleteMany({});
+  });
+
   describe('getOneTag', () => {
     it('throws an error if neither an id or a slug are provided', async (done) => {
       const input = {};

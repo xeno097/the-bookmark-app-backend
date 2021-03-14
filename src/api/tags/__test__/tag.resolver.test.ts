@@ -24,6 +24,10 @@ describe('TagResolver', () => {
     return tag;
   };
 
+  afterEach(async () => {
+    await TagModel.deleteMany({});
+  });
+
   describe('tag', () => {
     const TAG_QUERY = gql`
       query($input: GetOneTagInput!) {
