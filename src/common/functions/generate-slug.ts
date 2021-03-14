@@ -1,5 +1,5 @@
 import slugify from 'slugify';
-import { InvalidFunctionInputError } from '../../errors/invalid-input.error';
+import { InvalidFunctionInputError } from '../../errors/invalid-function-input.error';
 import { randomBytes } from 'crypto';
 
 export const generateSlug = (input: string[], isUnique = false) => {
