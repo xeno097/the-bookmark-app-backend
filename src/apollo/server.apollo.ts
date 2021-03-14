@@ -32,6 +32,18 @@ const typeDefs = gql`
     email: String!
   }
 
+  type AuthPayload {
+    jwt: String!
+    user: User!
+  }
+
+  input SignUpInput {
+    username: String!
+    password: String!
+    confirmPassword: String!
+    email: String!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
@@ -41,6 +53,8 @@ const typeDefs = gql`
     createTag(input: CreateTagInput!): Tag!
     updateTag(input: UpdateTagInput!): Tag!
     deleteTag(input: GetOneTagInput!): Tag!
+
+    signUp(input: SignUpInput!): AuthPayload!
   }
 `;
 
