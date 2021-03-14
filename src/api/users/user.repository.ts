@@ -1,6 +1,7 @@
 import { IErrorPayload } from '../../common/interfaces/error-payload.interface';
 import { InvalidUserInputError } from '../../errors/invalid-user-input.error';
 import { UserDocument, UserModel } from './database/user.entity';
+import { ISignInInput } from './interfaces/sign-in-input.interface';
 import { ISignUpInput } from './interfaces/sign-up-input.interface';
 import { PasswordManager } from './utils/password.util';
 
@@ -50,4 +51,6 @@ const signUp = async (input: ISignUpInput): Promise<UserDocument> => {
   return newUser;
 };
 
-export { signUp };
+const signIn = async (input: ISignInInput): Promise<any> => {};
+
+export { signUp, signIn };
