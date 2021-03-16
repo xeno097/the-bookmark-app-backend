@@ -1,12 +1,23 @@
 import { IErrorPayload } from '../../common/interfaces/error-payload.interface';
 import { InvalidUserInputError } from '../../errors/invalid-user-input.error';
+import { NotFoundError } from '../../errors/not-found.error';
 import { UserDocument, UserModel } from './database/user.entity';
 import { IGetOneUser } from './interfaces/find-one-user-input.interface';
 import { ISignInInput } from './interfaces/sign-in-input.interface';
 import { ISignUpInput } from './interfaces/sign-up-input.interface';
 import { PasswordManager } from './utils/password.util';
 
-const getOneUser = async (input: IGetOneUser): Promise<any> => {};
+const getOneUser = async (input: IGetOneUser): Promise<UserDocument> => {
+  const { id } = input;
+
+  const user = await UserModel.findById(id);
+
+  if (!user) {
+    throw new NotFoundError();
+  }
+
+  return user;
+};
 
 const signUp = async (input: ISignUpInput): Promise<UserDocument> => {
   const { confirmPassword, email, password, username } = input;
