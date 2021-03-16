@@ -183,6 +183,10 @@ describe('UserResolver', () => {
 
       expect(res.body.errors).toBeUndefined();
       expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+      expect(res.body.data.signIn.user.username).toEqual(newUser.username);
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
     });
   });
 });
