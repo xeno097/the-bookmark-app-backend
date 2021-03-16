@@ -2,9 +2,19 @@ import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custo
 import { IAuthPayload } from './interfaces/auth-payload.interface';
 import { ISignInInput } from './interfaces/sign-in-input.interface';
 import { ISignUpInput } from './interfaces/sign-up-input.interface';
-import { IUserMutations } from './interfaces/user-resolver.interface';
+import {
+  IUserMutations,
+  IUserQueries,
+} from './interfaces/user-resolver.interface';
 import { signUp as signUpRepo, signIn as signInRepo } from './user.repository';
 import { AUTH_EXPIRATION_TIME, generateToken } from './utils/jwt.utils';
+
+const self = async (
+  parent: any,
+  args: any,
+  context: GqlCustomExecutionContext,
+  info: any,
+) => {};
 
 const signUp = async (
   parent: any,
@@ -64,9 +74,13 @@ const signIn = async (
   };
 };
 
+const userQueries: IUserQueries = {
+  self,
+};
+
 const userMutations: IUserMutations = {
   signUp,
   signIn,
 };
 
-export { userMutations };
+export { userQueries, userMutations };
