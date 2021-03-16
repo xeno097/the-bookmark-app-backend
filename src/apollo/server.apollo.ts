@@ -1,6 +1,7 @@
 import { ApolloServer, gql } from 'apollo-server-express';
 import { tagQueries, tagMutations } from '../api/tags/tag.resolver';
 import { GqlCustomExecutionContext } from '../common/interfaces/graphql-custom-context.interface';
+import { signUp } from '../api/users/user.resolver';
 
 const typeDefs = gql`
   type Tag {
@@ -32,6 +33,18 @@ const typeDefs = gql`
     email: String!
   }
 
+  type AuthPayload {
+    jwt: String!
+    user: User!
+  }
+
+  input SignUpInput {
+    username: String!
+    password: String!
+    confirmPassword: String!
+    email: String!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
@@ -41,6 +54,8 @@ const typeDefs = gql`
     createTag(input: CreateTagInput!): Tag!
     updateTag(input: UpdateTagInput!): Tag!
     deleteTag(input: GetOneTagInput!): Tag!
+
+    signUp(input: SignUpInput!): AuthPayload!
   }
 `;
 
@@ -58,6 +73,7 @@ const apolloServer = new ApolloServer({
     },
     Mutation: {
       ...tagMutations,
+      signUp,
     },
   },
 });
