@@ -1,3 +1,4 @@
+import { AUTH_PROPERTY_KEY } from '../../common/constants';
 import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custom-context.interface';
 import { IAuthPayload } from './interfaces/auth-payload.interface';
 import { ISignInInput } from './interfaces/sign-in-input.interface';
@@ -33,7 +34,7 @@ const signUp = async (
 
   const expiresIn = date.setSeconds(date.getSeconds() + AUTH_EXPIRATION_TIME);
 
-  res.cookie('authentication', jwt, {
+  res.cookie(AUTH_PROPERTY_KEY, jwt, {
     httpOnly: true,
     secure: false,
     expires: new Date(expiresIn),
@@ -62,7 +63,7 @@ const signIn = async (
 
   const expiresIn = date.setSeconds(date.getSeconds() + AUTH_EXPIRATION_TIME);
 
-  res.cookie('authentication', jwt, {
+  res.cookie(AUTH_PROPERTY_KEY, jwt, {
     httpOnly: true,
     secure: false,
     expires: new Date(expiresIn),
