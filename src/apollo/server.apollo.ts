@@ -45,6 +45,11 @@ const typeDefs = gql`
     email: String!
   }
 
+  input SignInInput {
+    username: String!
+    password: String!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
@@ -56,6 +61,7 @@ const typeDefs = gql`
     deleteTag(input: GetOneTagInput!): Tag!
 
     signUp(input: SignUpInput!): AuthPayload!
+    signIn(input: SignInInput!): AuthPayload!
   }
 `;
 
