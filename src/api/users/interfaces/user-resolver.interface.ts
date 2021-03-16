@@ -3,6 +3,15 @@ import { IAuthPayload } from './auth-payload.interface';
 import { ISignInInput } from './sign-in-input.interface';
 import { ISignUpInput } from './sign-up-input.interface';
 
+export interface IUserQueries {
+  self: (
+    parent: any,
+    args: any,
+    context: GqlCustomExecutionContext,
+    info: any,
+  ) => Promise<any>;
+}
+
 export interface IUserMutations {
   signUp: (
     parent: any,
@@ -15,5 +24,5 @@ export interface IUserMutations {
     args: { input: ISignInInput },
     context: GqlCustomExecutionContext,
     info: any,
-  ) => Promise<any>;
+  ) => Promise<IAuthPayload>;
 }
