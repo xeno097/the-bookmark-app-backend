@@ -1,7 +1,9 @@
 import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custom-context.interface';
 import { IAuthPayload } from './interfaces/auth-payload.interface';
+import { ISignInInput } from './interfaces/sign-in-input.interface';
 import { ISignUpInput } from './interfaces/sign-up-input.interface';
-import { signUp as signUpRepo } from './user.repository';
+import { IUserMutations } from './interfaces/user-resolver.interface';
+import { signUp as signUpRepo, signIn as signInRepo } from './user.repository';
 import { AUTH_EXPIRATION_TIME, generateToken } from './utils/jwt.utils';
 
 const signUp = async (
@@ -33,4 +35,38 @@ const signUp = async (
   };
 };
 
-export { signUp };
+const signIn = async (
+  parent: any,
+  args: { input: ISignInInput },
+  context: GqlCustomExecutionContext,
+  info: any,
+): Promise<any> => {
+  const { input } = args;
+  const { res } = context;
+
+  const user = await signInRepo(input);
+
+  const jwt = generateToken({ id: user.id, username: user.username });
+
+  const date = new Date();
+
+  const expiresIn = date.setSeconds(date.getSeconds() + AUTH_EXPIRATION_TIME);
+
+  res.cookie('authentication', jwt, {
+    httpOnly: true,
+    secure: false,
+    expires: new Date(expiresIn),
+  });
+
+  return {
+    jwt,
+    user,
+  };
+};
+
+const userMutations: IUserMutations = {
+  signUp,
+  signIn,
+};
+
+export { userMutations };

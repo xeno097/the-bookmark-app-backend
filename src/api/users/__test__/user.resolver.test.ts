@@ -1,9 +1,16 @@
-import { gql } from 'apollo-server-express';
 import request from 'supertest';
 import { app } from '../../../app';
+import { GRAPHQL_ENDPOINT } from '../../../common/constants';
 import { UserModel } from '../database/user.entity';
+import { ISignInInput } from '../interfaces/sign-in-input.interface';
+import { ISignUpInput } from '../interfaces/sign-up-input.interface';
+import { signUp } from '../user.repository';
 
 describe('UserResolver', () => {
+  afterEach(async () => {
+    await UserModel.deleteMany({});
+  });
+
   describe('signUp', () => {
     const setup = async () => {
       const user = UserModel.build({
@@ -16,10 +23,6 @@ describe('UserResolver', () => {
 
       return user;
     };
-
-    afterEach(async () => {
-      await UserModel.deleteMany({});
-    });
 
     const SIGN_UP = `
       mutation($input: SignUpInput!) {
@@ -44,7 +47,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_UP, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
@@ -62,7 +65,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_UP, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
@@ -80,7 +83,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_UP, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
@@ -98,7 +101,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_UP, variables: { input } });
 
       expect(res.body.errors).not.toBeDefined();
@@ -106,6 +109,85 @@ describe('UserResolver', () => {
       expect(res.body.data.signUp).toBeDefined();
       expect(res.body.data.signUp.user.username).toEqual(input.username);
       expect(res.body.data.signUp.user.email).toEqual(input.email);
+    });
+  });
+
+  describe('signIn', () => {
+    const setup = async () => {
+      const signUpInput: ISignUpInput = {
+        username: 'test',
+        password: '1234567890',
+        confirmPassword: '1234567890',
+        email: 'testuser@email.com',
+      };
+
+      const user = await signUp(signUpInput);
+
+      return user;
+    };
+
+    const SIGN_IN = `
+      mutation($input: SignInInput!) {
+        signIn(input: $input) {
+          jwt
+          user {
+            username
+            email
+          }
+        }
+      }
+    `;
+
+    it('throws an error if given a non existing username', async () => {
+      const newUser = await setup();
+
+      const input: ISignInInput = {
+        password: '1234567809',
+        username: 'test',
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: SIGN_IN, variables: { input } });
+
+      expect(res.body.errors).toBeDefined();
+      expect(res.body.data).toBeNull();
+    });
+
+    it('throws an error if given an invalid password', async () => {
+      const newUser = await setup();
+
+      const input: ISignInInput = {
+        password: '1234567809',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: SIGN_IN, variables: { input } });
+
+      expect(res.body.errors).toBeDefined();
+      expect(res.body.data).toBeNull();
+    });
+
+    it('successfully signs in the user given a valid combination of username and password', async () => {
+      const newUser = await setup();
+
+      const input: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: SIGN_IN, variables: { input } });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+      expect(res.body.data.signIn.user.username).toEqual(newUser.username);
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
     });
   });
 });
