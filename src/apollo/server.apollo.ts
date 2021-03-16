@@ -71,7 +71,7 @@ const apolloServer = new ApolloServer({
   context: ({ req, res }): GqlCustomExecutionContext => ({
     req,
     res,
-    auth: 'test',
+    user: undefined,
   }),
   playground: true,
   typeDefs,
