@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { app } from '../../../app';
+import { GRAPHQL_ENDPOINT } from '../../../common/constants';
 import { UserModel } from '../database/user.entity';
 import { ISignInInput } from '../interfaces/sign-in-input.interface';
 import { ISignUpInput } from '../interfaces/sign-up-input.interface';
@@ -46,7 +47,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_UP, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
@@ -64,7 +65,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_UP, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
@@ -82,7 +83,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_UP, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
@@ -100,7 +101,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_UP, variables: { input } });
 
       expect(res.body.errors).not.toBeDefined();
@@ -146,7 +147,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_IN, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
@@ -162,7 +163,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_IN, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
@@ -178,7 +179,7 @@ describe('UserResolver', () => {
       };
 
       const res = await request(app)
-        .post('/graphql')
+        .post(GRAPHQL_ENDPOINT)
         .send({ query: SIGN_IN, variables: { input } });
 
       expect(res.body.errors).toBeUndefined();
