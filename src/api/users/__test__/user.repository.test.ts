@@ -1,7 +1,8 @@
 import { UserModel } from '../database/user.entity';
 import { ISignInInput } from '../interfaces/sign-in-input.interface';
 import { ISignUpInput } from '../interfaces/sign-up-input.interface';
-import { signIn, signUp } from '../user.repository';
+import { getOneUser, signIn, signUp } from '../user.repository';
+import mongoose from 'mongoose';
 
 describe('UserRepository', () => {
   const setup = async () => {
@@ -18,6 +19,31 @@ describe('UserRepository', () => {
 
   afterEach(async () => {
     await UserModel.deleteMany({});
+  });
+
+  describe('getOneUser', () => {
+    it('throws an error if given an id it cannot find a user', async (done) => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      try {
+        await getOneUser({ id });
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('successfully finds a user given an id', async () => {
+      const user = await setup();
+
+      const foundUser = await getOneUser({ id: user.id });
+
+      expect(foundUser).toBeDefined();
+      expect(foundUser.id).toEqual(user.id);
+      expect(foundUser.email).toEqual(user.email);
+      expect(foundUser.username).toEqual(user.username);
+    });
   });
 
   describe('signUp', () => {
