@@ -268,7 +268,7 @@ describe('UserResolver', () => {
       expect(loggedRes.body.data).toBeNull();
     });
 
-    it('successfully returns the user data if the user is logged in', async () => {
+    it('successfully returns the user data if the user is logged in [jwt from cookie]', async () => {
       const newUser = await setup();
 
       const input: ISignInInput = {
@@ -293,7 +293,44 @@ describe('UserResolver', () => {
 
       const loggedRes = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .set(AUTH_PROPERTY_KEY, jwtToken)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: SELF_QUERY,
+          variables: {},
+        });
+
+      expect(loggedRes.body.errors).toBeUndefined();
+      expect(loggedRes.body.data).toBeDefined();
+      expect(loggedRes.body.data.self.email).toEqual(loggerUserEmail);
+      expect(loggedRes.body.data.self.username).toEqual(loggedUserName);
+    });
+
+    it('successfully returns the user data if the user is logged in [jwt from headers]', async () => {
+      const newUser = await setup();
+
+      const input: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: SIGN_IN, variables: { input } });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+      expect(res.body.data.signIn.user.username).toEqual(newUser.username);
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+
+      const jwtToken = res.body.data.signIn.jwt;
+      const loggedUserName = res.body.data.signIn.user.username;
+      const loggerUserEmail = res.body.data.signIn.user.email;
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set(AUTH_PROPERTY_KEY, `Bearer ${jwtToken}`)
         .send({
           query: SELF_QUERY,
           variables: {},
