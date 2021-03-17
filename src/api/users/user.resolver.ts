@@ -13,6 +13,7 @@ import {
   getOneUser,
 } from './user.repository';
 import { AUTH_EXPIRATION_TIME, generateToken } from './utils/jwt.utils';
+import { authorizeUser } from '../../common/functions/authorize-user';
 
 const self = async (
   parent: any,
@@ -21,12 +22,9 @@ const self = async (
   info: any,
 ) => {
   const { user } = context;
+  const verifiedUser = authorizeUser(user);
 
-  if (!user) {
-    throw new Error('Unhautorized');
-  }
-
-  const { id } = user;
+  const { id } = verifiedUser;
   return await getOneUser({ id });
 };
 
