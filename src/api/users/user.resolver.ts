@@ -7,7 +7,11 @@ import {
   IUserMutations,
   IUserQueries,
 } from './interfaces/user-resolver.interface';
-import { signUp as signUpRepo, signIn as signInRepo } from './user.repository';
+import {
+  signUp as signUpRepo,
+  signIn as signInRepo,
+  getOneUser,
+} from './user.repository';
 import { AUTH_EXPIRATION_TIME, generateToken } from './utils/jwt.utils';
 
 const self = async (
@@ -15,7 +19,16 @@ const self = async (
   args: any,
   context: GqlCustomExecutionContext,
   info: any,
-) => {};
+) => {
+  const { user } = context;
+
+  if (!user) {
+    throw new Error('Unhautorized');
+  }
+
+  const { id } = user;
+  return await getOneUser({ id });
+};
 
 const signUp = async (
   parent: any,

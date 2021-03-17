@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { AUTH_PROPERTY_KEY } from '../../common/constants';
 import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custom-context.interface';
 import { IJwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import jwt from 'jsonwebtoken';
@@ -11,10 +10,13 @@ export const gqlContext = (ctx: {
 }): GqlCustomExecutionContext => {
   const { req, res } = ctx;
 
-  const jwtCookie = req.cookies[AUTH_PROPERTY_KEY];
-  const jwtHeader = req.headers.authorization?.split(' ')[1];
+  const jwtFromCookie = req?.cookies?.authorization;
+  const authHeader = req?.headers?.authorization?.split(' ');
 
-  const token = jwtCookie || jwtHeader;
+  const jwtFromHeader =
+    authHeader && authHeader[0] === 'Bearer' ? authHeader[1] : null;
+
+  const token = jwtFromCookie || jwtFromHeader;
 
   let user = undefined;
 
