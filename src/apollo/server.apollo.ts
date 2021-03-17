@@ -1,7 +1,7 @@
 import { ApolloServer, gql } from 'apollo-server-express';
 import { tagQueries, tagMutations } from '../api/tags/tag.resolver';
-import { GqlCustomExecutionContext } from '../common/interfaces/graphql-custom-context.interface';
 import { userMutations, userQueries } from '../api/users/user.resolver';
+import { gqlContext } from './utils/gql-context.util';
 
 const typeDefs = gql`
   type Tag {
@@ -68,11 +68,7 @@ const typeDefs = gql`
 `;
 
 const apolloServer = new ApolloServer({
-  context: ({ req, res }): GqlCustomExecutionContext => ({
-    req,
-    res,
-    user: undefined,
-  }),
+  context: gqlContext,
   playground: true,
   typeDefs,
   resolvers: {
