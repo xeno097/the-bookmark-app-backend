@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { app } from '../../../app';
-import { GRAPHQL_ENDPOINT } from '../../../common/constants';
+import { AUTH_PROPERTY_KEY, GRAPHQL_ENDPOINT } from '../../../common/constants';
 import { UserModel } from '../database/user.entity';
 import { ISignInInput } from '../interfaces/sign-in-input.interface';
 import { ISignUpInput } from '../interfaces/sign-up-input.interface';
@@ -10,6 +10,39 @@ describe('UserResolver', () => {
   afterEach(async () => {
     await UserModel.deleteMany({});
   });
+
+  const SIGN_IN = `
+      mutation($input: SignInInput!) {
+        signIn(input: $input) {
+          jwt
+          user {
+            username
+            email
+          }
+        }
+      }
+    `;
+
+  const SIGN_UP = `
+      mutation($input: SignUpInput!) {
+        signUp(input: $input) {
+          jwt
+          user {
+            username
+            email
+          }
+        }
+      }
+    `;
+
+  const SELF_QUERY = `
+      query{
+        self{
+          username
+          email
+        }
+      }
+    `;
 
   describe('signUp', () => {
     const setup = async () => {
@@ -23,18 +56,6 @@ describe('UserResolver', () => {
 
       return user;
     };
-
-    const SIGN_UP = `
-      mutation($input: SignUpInput!) {
-        signUp(input: $input) {
-          jwt
-          user {
-            username
-            email
-          }
-        }
-      }
-    `;
 
     it('throws an error if the email is already in use', async () => {
       const user = await setup();
@@ -188,6 +209,137 @@ describe('UserResolver', () => {
       expect(res.body.data.signIn.user.email).toEqual(newUser.email);
       expect(res.body.data.signIn.user.username).toEqual(newUser.username);
       expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+    });
+  });
+
+  describe('self', () => {
+    const setup = async () => {
+      const signUpInput: ISignUpInput = {
+        username: 'test',
+        password: '1234567890',
+        confirmPassword: '1234567890',
+        email: 'testuser@email.com',
+      };
+
+      const user = await signUp(signUpInput);
+
+      return user;
+    };
+
+    it('throws an error if a user is not logged in', async () => {
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: SELF_QUERY, variables: {} });
+
+      expect(res.body.errors).toBeDefined();
+      expect(res.body.data).toBeNull();
+    });
+
+    it('throws an error if a user has an invalid token', async () => {
+      const newUser = await setup();
+
+      const input: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: SIGN_IN, variables: { input } });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+      expect(res.body.data.signIn.user.username).toEqual(newUser.username);
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+
+      const jwtToken = '1cecegrii ';
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set(AUTH_PROPERTY_KEY, jwtToken)
+        .send({
+          query: SELF_QUERY,
+          variables: {},
+        });
+
+      expect(loggedRes.body.errors).toBeDefined();
+      expect(loggedRes.body.data).toBeNull();
+    });
+
+    it('successfully returns the user data if the user is logged in [jwt from cookie]', async () => {
+      const newUser = await setup();
+
+      const input: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: SIGN_IN, variables: { input } });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+      expect(res.body.data.signIn.user.username).toEqual(newUser.username);
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+
+      const jwtToken = res.body.data.signIn.jwt;
+      const loggedUserName = res.body.data.signIn.user.username;
+      const loggerUserEmail = res.body.data.signIn.user.email;
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: SELF_QUERY,
+          variables: {},
+        });
+
+      expect(loggedRes.body.errors).toBeUndefined();
+      expect(loggedRes.body.data).toBeDefined();
+      expect(loggedRes.body.data.self.email).toEqual(loggerUserEmail);
+      expect(loggedRes.body.data.self.username).toEqual(loggedUserName);
+    });
+
+    it('successfully returns the user data if the user is logged in [jwt from headers]', async () => {
+      const newUser = await setup();
+
+      const input: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: SIGN_IN, variables: { input } });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+      expect(res.body.data.signIn.user.username).toEqual(newUser.username);
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+
+      const jwtToken = res.body.data.signIn.jwt;
+      const loggedUserName = res.body.data.signIn.user.username;
+      const loggerUserEmail = res.body.data.signIn.user.email;
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set(AUTH_PROPERTY_KEY, `Bearer ${jwtToken}`)
+        .send({
+          query: SELF_QUERY,
+          variables: {},
+        });
+
+      expect(loggedRes.body.errors).toBeUndefined();
+      expect(loggedRes.body.data).toBeDefined();
+      expect(loggedRes.body.data.self.email).toEqual(loggerUserEmail);
+      expect(loggedRes.body.data.self.username).toEqual(loggedUserName);
     });
   });
 });

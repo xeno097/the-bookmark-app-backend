@@ -1,10 +1,32 @@
+import { AUTH_PROPERTY_KEY } from '../../common/constants';
 import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custom-context.interface';
 import { IAuthPayload } from './interfaces/auth-payload.interface';
 import { ISignInInput } from './interfaces/sign-in-input.interface';
 import { ISignUpInput } from './interfaces/sign-up-input.interface';
-import { IUserMutations } from './interfaces/user-resolver.interface';
-import { signUp as signUpRepo, signIn as signInRepo } from './user.repository';
+import {
+  IUserMutations,
+  IUserQueries,
+} from './interfaces/user-resolver.interface';
+import {
+  signUp as signUpRepo,
+  signIn as signInRepo,
+  getOneUser,
+} from './user.repository';
 import { AUTH_EXPIRATION_TIME, generateToken } from './utils/jwt.utils';
+import { authorizeUser } from '../../common/functions/authorize-user';
+
+const self = async (
+  parent: any,
+  args: any,
+  context: GqlCustomExecutionContext,
+  info: any,
+) => {
+  const { user } = context;
+  const verifiedUser = authorizeUser(user);
+
+  const { id } = verifiedUser;
+  return await getOneUser({ id });
+};
 
 const signUp = async (
   parent: any,
@@ -23,7 +45,7 @@ const signUp = async (
 
   const expiresIn = date.setSeconds(date.getSeconds() + AUTH_EXPIRATION_TIME);
 
-  res.cookie('authentication', jwt, {
+  res.cookie(AUTH_PROPERTY_KEY, jwt, {
     httpOnly: true,
     secure: false,
     expires: new Date(expiresIn),
@@ -52,7 +74,7 @@ const signIn = async (
 
   const expiresIn = date.setSeconds(date.getSeconds() + AUTH_EXPIRATION_TIME);
 
-  res.cookie('authentication', jwt, {
+  res.cookie(AUTH_PROPERTY_KEY, jwt, {
     httpOnly: true,
     secure: false,
     expires: new Date(expiresIn),
@@ -64,9 +86,13 @@ const signIn = async (
   };
 };
 
+const userQueries: IUserQueries = {
+  self,
+};
+
 const userMutations: IUserMutations = {
   signUp,
   signIn,
 };
 
-export { userMutations };
+export { userQueries, userMutations };
