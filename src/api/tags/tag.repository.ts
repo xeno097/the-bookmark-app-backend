@@ -1,5 +1,5 @@
 import { generateSlug } from '../../common/functions/generate-slug';
-import { InvalidFunctionInputError } from '../../errors/invalid-input.error';
+import { InvalidFunctionInputError } from '../../errors/invalid-function-input.error';
 import { NotFoundError } from '../../errors/not-found.error';
 import { TagDocument, TagModel } from './database/tag.entity';
 import { ICreateTagInput } from './interfaces/create-tag-input.interface';
