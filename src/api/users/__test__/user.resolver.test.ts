@@ -11,7 +11,7 @@ describe('UserResolver', () => {
     await UserModel.deleteMany({});
   });
 
-  const SIGN_IN = `
+  const SIGN_IN_MUTATION = `
       mutation($input: SignInInput!) {
         signIn(input: $input) {
           jwt
@@ -23,7 +23,7 @@ describe('UserResolver', () => {
       }
     `;
 
-  const SIGN_UP = `
+  const SIGN_UP_MUTATION = `
       mutation($input: SignUpInput!) {
         signUp(input: $input) {
           jwt
@@ -75,7 +75,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_UP, variables: { input } });
+        .send({ query: SIGN_UP_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
       expect(res.body.data).toBeNull();
@@ -93,7 +93,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_UP, variables: { input } });
+        .send({ query: SIGN_UP_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
       expect(res.body.data).toBeNull();
@@ -111,7 +111,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_UP, variables: { input } });
+        .send({ query: SIGN_UP_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
       expect(res.body.data).toBeNull();
@@ -129,7 +129,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_UP, variables: { input } });
+        .send({ query: SIGN_UP_MUTATION, variables: { input } });
 
       expect(res.body.errors).not.toBeDefined();
       expect(res.body.data).toBeDefined();
@@ -251,7 +251,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_IN, variables: { input } });
+        .send({ query: SIGN_IN_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeUndefined();
       expect(res.body.data).toBeDefined();
@@ -284,7 +284,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_IN, variables: { input } });
+        .send({ query: SIGN_IN_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeUndefined();
       expect(res.body.data).toBeDefined();
@@ -321,7 +321,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_IN, variables: { input } });
+        .send({ query: SIGN_IN_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeUndefined();
       expect(res.body.data).toBeDefined();
@@ -382,7 +382,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_IN, variables: { input } });
+        .send({ query: SIGN_IN_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeUndefined();
       expect(res.body.data).toBeDefined();

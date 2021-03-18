@@ -64,7 +64,7 @@ describe('Tag Repository', () => {
       expect(foundTag.slug).toEqual(tag.slug);
     });
 
-    it('it successfully returns a tag given a slug of an already created tag', async () => {
+    it('successfully returns a tag given a slug of an already created tag', async () => {
       const tag = await setup();
 
       const foundTag = await getOneTag({ slug: tag.slug });
