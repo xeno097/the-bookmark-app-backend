@@ -1,4 +1,7 @@
-import { AUTH_PROPERTY_KEY } from '../../common/constants';
+import {
+  AUTH_EXPIRATION_TIME,
+  AUTH_PROPERTY_KEY,
+} from '../../common/constants';
 import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custom-context.interface';
 import { IAuthPayload } from './interfaces/auth-payload.interface';
 import { ISignInInput } from './interfaces/sign-in-input.interface';
@@ -12,7 +15,7 @@ import {
   signIn as signInRepo,
   getOneUser,
 } from './user.repository';
-import { AUTH_EXPIRATION_TIME, generateToken } from './utils/jwt.utils';
+import { generateToken } from './utils/jwt.utils';
 import { authorizeUser } from '../../common/functions/authorize-user';
 
 const self = async (

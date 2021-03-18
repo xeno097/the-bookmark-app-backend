@@ -1,8 +1,7 @@
 import jwt from 'jsonwebtoken';
+import { AUTH_EXPIRATION_TIME } from '../../../common/constants';
 import { IJwtPayload } from '../../../common/interfaces/jwt-payload.interface';
 import { appConfig } from '../../../config/app.config';
-
-export const AUTH_EXPIRATION_TIME = 60 * 60;
 
 export const generateToken = (userData: IJwtPayload) => {
   const token = jwt.sign(userData, appConfig.jwtSecret, {
