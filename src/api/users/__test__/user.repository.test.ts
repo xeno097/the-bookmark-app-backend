@@ -86,8 +86,6 @@ describe('UserRepository', () => {
     });
 
     it('throws an error if the passwords do not match', async (done) => {
-      const user = await setup();
-
       const input: ISignUpInput = {
         confirmPassword: '12345678',
         password: '1234567890',
@@ -132,7 +130,7 @@ describe('UserRepository', () => {
     };
 
     it('throws an error if an invalid username is used', async (done) => {
-      const user = await createNewUser();
+      await createNewUser();
 
       const input: ISignInInput = {
         password: '1234567890',
