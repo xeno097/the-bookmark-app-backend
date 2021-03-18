@@ -11,9 +11,34 @@ describe('UserResolver', () => {
     await UserModel.deleteMany({});
   });
 
-  const SIGN_IN_MUTATION = `
-      mutation($input: SignInInput!) {
-        signIn(input: $input) {
+  const createUserSetup = async () => {
+    const user = UserModel.build({
+      email: 'test@test.com',
+      password: '1234567890',
+      username: 'testuser',
+    });
+
+    await user.save();
+
+    return user;
+  };
+
+  const signUpUserSetup = async () => {
+    const signUpInput: ISignUpInput = {
+      username: 'test',
+      password: '1234567890',
+      confirmPassword: '1234567890',
+      email: 'testuser@email.com',
+    };
+
+    const user = await signUp(signUpInput);
+
+    return user;
+  };
+
+  const SIGN_UP_MUTATION = `
+      mutation($input: SignUpInput!) {
+        signUp(input: $input) {
           jwt
           user {
             username
@@ -23,9 +48,9 @@ describe('UserResolver', () => {
       }
     `;
 
-  const SIGN_UP_MUTATION = `
-      mutation($input: SignUpInput!) {
-        signUp(input: $input) {
+  const SIGN_IN_MUTATION = `
+      mutation($input: SignInInput!) {
+        signIn(input: $input) {
           jwt
           user {
             username
@@ -51,20 +76,8 @@ describe('UserResolver', () => {
   `;
 
   describe('signUp', () => {
-    const setup = async () => {
-      const user = UserModel.build({
-        email: 'test@test.com',
-        password: '1234567890',
-        username: 'testuser',
-      });
-
-      await user.save();
-
-      return user;
-    };
-
     it('throws an error if the email is already in use', async () => {
-      const user = await setup();
+      const user = await createUserSetup();
 
       const input = {
         username: 'test',
@@ -82,7 +95,7 @@ describe('UserResolver', () => {
     });
 
     it('throws an error if the username is already in use', async () => {
-      const user = await setup();
+      const user = await createUserSetup();
 
       const input = {
         username: user.username,
@@ -100,8 +113,6 @@ describe('UserResolver', () => {
     });
 
     it('throws an error if the passwords do not match', async () => {
-      const user = await setup();
-
       const input = {
         username: 'test',
         password: '12345678',
@@ -118,8 +129,6 @@ describe('UserResolver', () => {
     });
 
     it('returns the user data and a jwt token given a valid sign up input', async () => {
-      const user = await setup();
-
       const input = {
         username: 'test',
         password: '1234567890',
@@ -140,33 +149,8 @@ describe('UserResolver', () => {
   });
 
   describe('signIn', () => {
-    const setup = async () => {
-      const signUpInput: ISignUpInput = {
-        username: 'test',
-        password: '1234567890',
-        confirmPassword: '1234567890',
-        email: 'testuser@email.com',
-      };
-
-      const user = await signUp(signUpInput);
-
-      return user;
-    };
-
-    const SIGN_IN = `
-      mutation($input: SignInInput!) {
-        signIn(input: $input) {
-          jwt
-          user {
-            username
-            email
-          }
-        }
-      }
-    `;
-
     it('throws an error if given a non existing username', async () => {
-      const newUser = await setup();
+      await signUpUserSetup();
 
       const input: ISignInInput = {
         password: '1234567809',
@@ -175,14 +159,14 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_IN, variables: { input } });
+        .send({ query: SIGN_IN_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
       expect(res.body.data).toBeNull();
     });
 
     it('throws an error if given an invalid password', async () => {
-      const newUser = await setup();
+      const newUser = await signUpUserSetup();
 
       const input: ISignInInput = {
         password: '1234567809',
@@ -191,14 +175,14 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_IN, variables: { input } });
+        .send({ query: SIGN_IN_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeDefined();
       expect(res.body.data).toBeNull();
     });
 
     it('successfully signs in the user given a valid combination of username and password', async () => {
-      const newUser = await setup();
+      const newUser = await signUpUserSetup();
 
       const input: ISignInInput = {
         password: '1234567890',
@@ -207,7 +191,7 @@ describe('UserResolver', () => {
 
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
-        .send({ query: SIGN_IN, variables: { input } });
+        .send({ query: SIGN_IN_MUTATION, variables: { input } });
 
       expect(res.body.errors).toBeUndefined();
       expect(res.body.data).toBeDefined();
@@ -219,19 +203,6 @@ describe('UserResolver', () => {
   });
 
   describe('self', () => {
-    const setup = async () => {
-      const signUpInput: ISignUpInput = {
-        username: 'test',
-        password: '1234567890',
-        confirmPassword: '1234567890',
-        email: 'testuser@email.com',
-      };
-
-      const user = await signUp(signUpInput);
-
-      return user;
-    };
-
     it('throws an error if a user is not logged in', async () => {
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
@@ -242,7 +213,7 @@ describe('UserResolver', () => {
     });
 
     it('throws an error if a user has an invalid token', async () => {
-      const newUser = await setup();
+      const newUser = await signUpUserSetup();
 
       const input: ISignInInput = {
         password: '1234567890',
@@ -275,7 +246,7 @@ describe('UserResolver', () => {
     });
 
     it('successfully returns the user data if the user is logged in [jwt from cookie]', async () => {
-      const newUser = await setup();
+      const newUser = await signUpUserSetup();
 
       const input: ISignInInput = {
         password: '1234567890',
@@ -312,7 +283,7 @@ describe('UserResolver', () => {
     });
 
     it('successfully returns the user data if the user is logged in [jwt from headers]', async () => {
-      const newUser = await setup();
+      const newUser = await signUpUserSetup();
 
       const input: ISignInInput = {
         password: '1234567890',
@@ -350,19 +321,6 @@ describe('UserResolver', () => {
   });
 
   describe('signOut', () => {
-    const setup = async () => {
-      const signUpInput: ISignUpInput = {
-        username: 'test',
-        password: '1234567890',
-        confirmPassword: '1234567890',
-        email: 'testuser@email.com',
-      };
-
-      const user = await signUp(signUpInput);
-
-      return user;
-    };
-
     it('throws an error if the user is not logged in', async () => {
       const res = await request(app)
         .post(GRAPHQL_ENDPOINT)
@@ -373,7 +331,7 @@ describe('UserResolver', () => {
     });
 
     it('successfully logs out the user', async () => {
-      const newUser = await setup();
+      const newUser = await signUpUserSetup();
 
       const input: ISignInInput = {
         password: '1234567890',
