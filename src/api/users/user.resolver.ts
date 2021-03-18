@@ -91,7 +91,18 @@ const signOut = async (
   args: any,
   context: GqlCustomExecutionContext,
   info: any,
-) => {};
+) => {
+  const { user, res } = context;
+  const verifiedUser = authorizeUser(user);
+
+  res.cookie(AUTH_PROPERTY_KEY, '', {
+    httpOnly: true,
+    secure: false,
+    expires: new Date(0),
+  });
+
+  return true;
+};
 
 const userQueries: IUserQueries = {
   self,
