@@ -410,6 +410,7 @@ describe('UserResolver', () => {
 
       const res1 = await request(app)
         .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
         .send({ query: SIGN_OUT_MUTATION, variables: {} });
 
       expect(res1.body.errors).toBeUndefined();
