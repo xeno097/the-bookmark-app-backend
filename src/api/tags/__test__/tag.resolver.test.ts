@@ -11,7 +11,7 @@ import { IUpdateTagInput } from '../interfaces/update-tag-input.interface';
 
 describe('TagResolver', () => {
   const { mutate, query } = createTestClient(apolloServer);
-  const setup = async () => {
+  const createTagSetup = async () => {
     const name = crypto.randomBytes(5).toString('hex');
 
     const tag = TagModel.build({
@@ -70,7 +70,7 @@ describe('TagResolver', () => {
     });
 
     it('returns a tag if given an id of an already existing one', async () => {
-      const testTag = await setup();
+      const testTag = await createTagSetup();
 
       const input: IGetOneTagInput = {
         id: testTag.id,
@@ -88,7 +88,7 @@ describe('TagResolver', () => {
     });
 
     it('returns a tag if given a slug of an already existing one', async () => {
-      const testTag = await setup();
+      const testTag = await createTagSetup();
 
       const input: IGetOneTagInput = {
         slug: testTag.slug,
@@ -137,9 +137,9 @@ describe('TagResolver', () => {
 
       expect(tags.length).toEqual(0);
 
-      const tag = await setup();
-      const tag1 = await setup();
-      const tag2 = await setup();
+      const tag = await createTagSetup();
+      const tag1 = await createTagSetup();
+      const tag2 = await createTagSetup();
 
       const queryResult = await query({
         query: TAGS_QUERY,
@@ -180,7 +180,7 @@ describe('TagResolver', () => {
     });
 
     it('throws an error if a user attempts to create a tag with a name already in use', async () => {
-      const tag = await setup();
+      const tag = await createTagSetup();
 
       const input: ICreateTagInput = {
         name: tag.name,
@@ -303,7 +303,7 @@ describe('TagResolver', () => {
     });
 
     it('successfully updates if given a valid id and a non empty name', async () => {
-      const tag = await setup();
+      const tag = await createTagSetup();
 
       const tags = await TagModel.find({});
 
@@ -330,7 +330,7 @@ describe('TagResolver', () => {
     });
 
     it('successfully updates if given a valid slug and a non emtpy name', async () => {
-      const tag = await setup();
+      const tag = await createTagSetup();
 
       const tags = await TagModel.find({});
 
@@ -398,7 +398,7 @@ describe('TagResolver', () => {
     });
 
     it('successfully deletes a tag given a valid id', async () => {
-      const testTag = await setup();
+      const testTag = await createTagSetup();
 
       const input: IGetOneTagInput = {
         id: testTag.id,
@@ -416,7 +416,7 @@ describe('TagResolver', () => {
     });
 
     it('successfully deletes a tag given a valid slug', async () => {
-      const testTag = await setup();
+      const testTag = await createTagSetup();
 
       const input: IGetOneTagInput = {
         slug: testTag.slug,
