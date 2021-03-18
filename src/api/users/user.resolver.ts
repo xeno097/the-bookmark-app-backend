@@ -96,7 +96,7 @@ const signOut = async (
   info: any,
 ) => {
   const { user, res } = context;
-  const verifiedUser = authorizeUser(user);
+  authorizeUser(user);
 
   res.cookie(AUTH_PROPERTY_KEY, '', {
     httpOnly: true,
