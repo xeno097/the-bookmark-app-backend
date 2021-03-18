@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { PasswordManager } from '../utils/password.util';
 
 interface BuildUserInput {
   username: string;
