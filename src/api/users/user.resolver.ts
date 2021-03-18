@@ -86,6 +86,13 @@ const signIn = async (
   };
 };
 
+const signOut = async (
+  parent: any,
+  args: any,
+  context: GqlCustomExecutionContext,
+  info: any,
+) => {};
+
 const userQueries: IUserQueries = {
   self,
 };
@@ -93,6 +100,7 @@ const userQueries: IUserQueries = {
 const userMutations: IUserMutations = {
   signUp,
   signIn,
+  signOut,
 };
 
 export { userQueries, userMutations };
