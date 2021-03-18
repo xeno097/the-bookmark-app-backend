@@ -25,4 +25,10 @@ export interface IUserMutations {
     context: GqlCustomExecutionContext,
     info: any,
   ) => Promise<IAuthPayload>;
+  signOut: (
+    parent: any,
+    args: any,
+    context: GqlCustomExecutionContext,
+    info: any,
+  ) => any;
 }

@@ -86,6 +86,24 @@ const signIn = async (
   };
 };
 
+const signOut = async (
+  parent: any,
+  args: any,
+  context: GqlCustomExecutionContext,
+  info: any,
+) => {
+  const { user, res } = context;
+  const verifiedUser = authorizeUser(user);
+
+  res.cookie(AUTH_PROPERTY_KEY, '', {
+    httpOnly: true,
+    secure: false,
+    expires: new Date(0),
+  });
+
+  return true;
+};
+
 const userQueries: IUserQueries = {
   self,
 };
@@ -93,6 +111,7 @@ const userQueries: IUserQueries = {
 const userMutations: IUserMutations = {
   signUp,
   signIn,
+  signOut,
 };
 
 export { userQueries, userMutations };
