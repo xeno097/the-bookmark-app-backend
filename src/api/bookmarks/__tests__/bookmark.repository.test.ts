@@ -1,7 +1,7 @@
 import { BookmarkModel } from '../database/bookmark.entity';
 import mongoose from 'mongoose';
 import { IGetOneBookmark } from '../interfaces/get-one-bookmark-input.interface';
-import { getOneBookmark } from '../bookmark.repository';
+import { deleteBookmark, getOneBookmark } from '../bookmark.repository';
 
 describe('BookmarkRepository', () => {
   const createBookmarkSetup = async () => {
@@ -19,7 +19,7 @@ describe('BookmarkRepository', () => {
     return bookmark;
   };
 
-  afterAll(async () => {
+  afterEach(async () => {
     await BookmarkModel.deleteMany({});
   });
 
@@ -91,5 +91,89 @@ describe('BookmarkRepository', () => {
 
   describe('updateBookmark', () => {});
 
-  describe('deleteBookMark', () => {});
+  describe('deleteBookmark', () => {
+    it('throws an error if given an id it cannot find a bookmark', async (done) => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const input: IGetOneBookmark = {
+        id,
+      };
+
+      try {
+        await deleteBookmark(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('throws an error if given a bookmark and a user id it cannot find a bookmark', async (done) => {
+      const id = mongoose.Types.ObjectId().toHexString();
+      const userId = mongoose.Types.ObjectId().toHexString();
+
+      const input: IGetOneBookmark = {
+        id,
+        userId,
+      };
+
+      try {
+        await deleteBookmark(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('successfully removes a bookmark given a valid id', async () => {
+      let checkDb = await BookmarkModel.find();
+
+      expect(checkDb.length).toEqual(0);
+
+      const testBookmark = await createBookmarkSetup();
+
+      checkDb = await BookmarkModel.find();
+
+      expect(checkDb.length).toEqual(1);
+
+      const input: IGetOneBookmark = {
+        id: testBookmark.id,
+      };
+
+      const bookmark = await deleteBookmark(input);
+
+      expect(bookmark.id).toEqual(input.id);
+
+      checkDb = await BookmarkModel.find();
+
+      expect(checkDb.length).toEqual(0);
+    });
+
+    it('successfully removes a bookmark given a combination of a valid bookmark and user id', async () => {
+      let checkDb = await BookmarkModel.find();
+
+      expect(checkDb.length).toEqual(0);
+
+      const testBookmark = await createBookmarkSetup();
+
+      checkDb = await BookmarkModel.find();
+
+      expect(checkDb.length).toEqual(1);
+
+      const input: IGetOneBookmark = {
+        id: testBookmark.id,
+        userId: testBookmark.userId,
+      };
+
+      const bookmark = await deleteBookmark(input);
+
+      expect(bookmark.id).toEqual(input.id);
+      expect(bookmark.userId).toEqual(input.userId);
+
+      checkDb = await BookmarkModel.find();
+
+      expect(checkDb.length).toEqual(0);
+    });
+  });
 });

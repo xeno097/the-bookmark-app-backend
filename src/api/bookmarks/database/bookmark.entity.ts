@@ -8,7 +8,7 @@ interface BuildBookmarkInput {
   userId: string;
 }
 
-interface BookmarkDocument extends mongoose.Document {
+export interface BookmarkDocument extends mongoose.Document {
   name: string;
   description?: string;
   tags: TagDocument[];
