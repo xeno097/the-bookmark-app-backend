@@ -1,0 +1,3 @@
+const getOneBookmark = () => {};
+
+export { getOneBookmark };
