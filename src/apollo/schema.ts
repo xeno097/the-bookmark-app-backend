@@ -83,6 +83,6 @@ export const typeDefs = gql`
     signIn(input: SignInInput!): AuthPayload!
     signOut: Boolean!
 
-    deleteBookmark(input: GetOneTagInput!): Bookmark!
+    deleteBookmark(input: GetOneBookmarkInput!): Bookmark!
   }
 `;
