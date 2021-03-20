@@ -6,9 +6,11 @@ import {
   deleteBookmark,
   getAllBookmarks,
   getOneBookmark,
+  updateBookmark,
 } from '../bookmark.repository';
 import { IFilterBookmarks } from '../interfaces/filter-bookmarks-input.interface';
 import { ICreateBookmarkInput } from '../interfaces/create-bookmark-input.interface';
+import { IUpdateBookmarkInput } from '../interfaces/update-bookmark-input.interface';
 
 describe('BookmarkRepository', () => {
   const createBookmarkSetup = async () => {
@@ -259,7 +261,96 @@ describe('BookmarkRepository', () => {
     });
   });
 
-  describe('updateBookmark', () => {});
+  describe('updateBookmark', () => {
+    it('throws an error if given an id it does not find a bookmark', async (done) => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const input: IUpdateBookmarkInput = {
+        filter: {
+          id,
+        },
+        data: {
+          name: 'a new name',
+        },
+      };
+
+      try {
+        await updateBookmark(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('throws an error if given an id and a userId it does not find a bookmark', async (done) => {
+      const id = mongoose.Types.ObjectId().toHexString();
+      const userId = mongoose.Types.ObjectId().toHexString();
+
+      const input: IUpdateBookmarkInput = {
+        filter: {
+          id,
+          userId,
+        },
+        data: {
+          name: 'a new name',
+        },
+      };
+
+      try {
+        await updateBookmark(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('successfully updates a bookmark given an id', async () => {
+      const bookmark = await createBookmarkSetup();
+
+      const input: IUpdateBookmarkInput = {
+        filter: {
+          id: bookmark.id,
+        },
+        data: {
+          name: 'a new name',
+        },
+      };
+
+      const updatedBookmark = await updateBookmark(input);
+
+      expect(updatedBookmark.id).toEqual(input.filter.id);
+      expect(updatedBookmark.name).toEqual(input.data.name);
+      expect(updatedBookmark.description).toEqual(bookmark.description);
+      expect(updatedBookmark.userId).toEqual(bookmark.userId);
+      expect(updatedBookmark.url).toEqual(bookmark.url);
+    });
+
+    it('successfully updates a bookmark given an id and a userId', async () => {
+      const bookmark = await createBookmarkSetup();
+
+      const input: IUpdateBookmarkInput = {
+        filter: {
+          id: bookmark.id,
+          userId: bookmark.userId,
+        },
+        data: {
+          name: 'a new name',
+          description: 'a description for an updated bookmark',
+        },
+      };
+
+      const updatedBookmark = await updateBookmark(input);
+
+      expect(updatedBookmark.id).toEqual(input.filter.id);
+      expect(updatedBookmark.userId).toEqual(input.filter.userId);
+      expect(updatedBookmark.name).toEqual(input.data.name);
+      expect(updatedBookmark.description).toEqual(input.data.description);
+      expect(updatedBookmark.userId).toEqual(bookmark.userId);
+      expect(updatedBookmark.url).toEqual(bookmark.url);
+    });
+  });
 
   describe('deleteBookmark', () => {
     it('throws an error if given an id it cannot find a bookmark', async (done) => {
