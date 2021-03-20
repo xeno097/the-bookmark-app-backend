@@ -115,8 +115,6 @@ const updateBookmark = async (
 
   await bookmarkToUpdate.save();
 
-  await bookmarkToUpdate.populate('tags').execPopulate();
-
   return bookmarkToUpdate;
 };
 
