@@ -1,6 +1,10 @@
 import { authorizeUser } from '../../common/functions/authorize-user';
 import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custom-context.interface';
-import { getAllBookmarks, getOneBookmark } from './bookmark.repository';
+import {
+  getAllBookmarks,
+  getOneBookmark,
+  deleteBookmark as deleteBookmarkRepo,
+} from './bookmark.repository';
 import { BookmarkDocument } from './database/bookmark.entity';
 import {
   IBookmarkMutations,
@@ -67,7 +71,17 @@ const deleteBookmark = async (
   args: { input: IGetOneBookmark },
   context: GqlCustomExecutionContext,
   info: any,
-) => {};
+) => {
+  const { user } = context;
+  const validatedUser = authorizeUser(user);
+  const { input } = args;
+
+  input.userId = validatedUser.id;
+
+  const deletedBookmark = await deleteBookmarkRepo(input);
+
+  return deletedBookmark;
+};
 
 const bookmarkQueries: IBookmarkQueries = {
   bookmark,
