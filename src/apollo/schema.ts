@@ -59,6 +59,11 @@ export const typeDefs = gql`
     id: String!
   }
 
+  input FilterBookmarksInput {
+    start: Int
+    limit: Int
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
@@ -66,7 +71,7 @@ export const typeDefs = gql`
     self: User!
 
     bookmark(input: GetOneBookmarkInput!): Bookmark!
-    bookmarks: [Bookmark]!
+    bookmarks(input: FilterBookmarksInput): [Bookmark]!
   }
 
   type Mutation {
