@@ -34,9 +34,8 @@ const bookmarkSchema = new mongoose.Schema(
       default: null,
     },
     tags: {
-      type: [mongoose.Types.ObjectId],
+      type: [{ type: mongoose.Types.ObjectId, ref: TagModelName }],
       default: [],
-      ref: TagModelName,
     },
     userId: {
       type: String,
@@ -55,6 +54,12 @@ const bookmarkSchema = new mongoose.Schema(
 bookmarkSchema.statics.build = (input: BuildBookmarkInput) => {
   return new BookmarkModel(input);
 };
+
+bookmarkSchema.post('save', async function (doc, next) {
+  await doc.populate('tags').execPopulate();
+
+  next();
+});
 
 const BookmarkModel = mongoose.model<BookmarkDocument, BookmarkModel>(
   BookmarkModelName,

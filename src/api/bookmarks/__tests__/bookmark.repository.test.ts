@@ -11,6 +11,9 @@ import {
 import { IFilterBookmarks } from '../interfaces/filter-bookmarks-input.interface';
 import { ICreateBookmarkInput } from '../interfaces/create-bookmark-input.interface';
 import { IUpdateBookmarkInput } from '../interfaces/update-bookmark-input.interface';
+import crypto from 'crypto';
+import { TagModel } from '../../tags/database/tag.entity';
+import { generateSlug } from '../../../common/functions/generate-slug';
 
 describe('BookmarkRepository', () => {
   const createBookmarkSetup = async () => {
@@ -27,6 +30,19 @@ describe('BookmarkRepository', () => {
     await bookmark.save();
 
     return bookmark;
+  };
+
+  const createTagSetup = async () => {
+    const name = crypto.randomBytes(5).toString('hex');
+
+    const tag = TagModel.build({
+      name: name,
+      slug: generateSlug([name]),
+    });
+
+    await tag.save();
+
+    return tag;
   };
 
   afterEach(async () => {
@@ -259,6 +275,29 @@ describe('BookmarkRepository', () => {
       expect(bookmark.url).toEqual(input.url);
       expect(bookmark.userId).toEqual(input.userId);
     });
+
+    it('successfully creates a bookmark and links it with a a tag', async () => {
+      const tag = await createTagSetup();
+
+      const userId = mongoose.Types.ObjectId().toHexString();
+
+      const input: ICreateBookmarkInput = {
+        name: 'a kubernetes guide',
+        tags: [tag.id],
+        url: 'the url of the guide',
+        userId,
+      };
+
+      const bookmark = await createBookmark(input);
+
+      expect(bookmark.name).toEqual(input.name);
+      expect(bookmark.url).toEqual(input.url);
+      expect(bookmark.userId).toEqual(input.userId);
+      expect(bookmark.tags[0]).toBeDefined();
+      expect(bookmark.tags[0].id).toEqual(tag.id);
+      expect(bookmark.tags[0].name).toEqual(tag.name);
+      expect(bookmark.tags[0].slug).toEqual(tag.slug);
+    });
   });
 
   describe('updateBookmark', () => {
@@ -329,6 +368,7 @@ describe('BookmarkRepository', () => {
 
     it('successfully updates a bookmark given an id and a userId', async () => {
       const bookmark = await createBookmarkSetup();
+      const tag = await createTagSetup();
 
       const input: IUpdateBookmarkInput = {
         filter: {
@@ -338,6 +378,7 @@ describe('BookmarkRepository', () => {
         data: {
           name: 'a new name',
           description: 'a description for an updated bookmark',
+          tags: [tag.id],
         },
       };
 
@@ -349,6 +390,10 @@ describe('BookmarkRepository', () => {
       expect(updatedBookmark.description).toEqual(input.data.description);
       expect(updatedBookmark.userId).toEqual(bookmark.userId);
       expect(updatedBookmark.url).toEqual(bookmark.url);
+      expect(updatedBookmark.tags[0]).toBeDefined();
+      expect(updatedBookmark.tags[0].id).toEqual(tag.id);
+      expect(updatedBookmark.tags[0].name).toEqual(tag.name);
+      expect(updatedBookmark.tags[0].slug).toEqual(tag.slug);
     });
   });
 

@@ -29,6 +29,8 @@ const getOneBookmark = async (
     throw new NotFoundError();
   }
 
+  await bookmark.populate('tags').execPopulate();
+
   return bookmark;
 };
 
@@ -52,6 +54,8 @@ const getAllBookmarks = async (
 
     bookmarks.where({ userId });
   }
+
+  bookmarks.populate('tags');
 
   await bookmarks.exec();
 
@@ -110,6 +114,8 @@ const updateBookmark = async (
   bookmarkToUpdate.set(data);
 
   await bookmarkToUpdate.save();
+
+  await bookmarkToUpdate.populate('tags').execPopulate();
 
   return bookmarkToUpdate;
 };
