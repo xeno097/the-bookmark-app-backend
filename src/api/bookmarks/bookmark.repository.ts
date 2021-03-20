@@ -6,6 +6,7 @@ import { BookmarkDocument, BookmarkModel } from './database/bookmark.entity';
 import { ICreateBookmarkInput } from './interfaces/create-bookmark-input.interface';
 import { IFilterBookmarks } from './interfaces/filter-bookmarks-input.interface';
 import { IGetOneBookmark } from './interfaces/get-one-bookmark-input.interface';
+import { IUpdateBookmarkInput } from './interfaces/update-bookmark-input.interface';
 
 const getOneBookmark = async (
   input: IGetOneBookmark,
@@ -99,6 +100,20 @@ const createBookmark = async (
   return bookmark;
 };
 
+const updateBookmark = async (
+  input: IUpdateBookmarkInput,
+): Promise<BookmarkDocument> => {
+  const { data, filter } = input;
+
+  const bookmarkToUpdate = await getOneBookmark(filter);
+
+  bookmarkToUpdate.set(data);
+
+  await bookmarkToUpdate.save();
+
+  return bookmarkToUpdate;
+};
+
 const deleteBookmark = async (
   input: IGetOneBookmark,
 ): Promise<BookmarkDocument> => {
@@ -109,4 +124,10 @@ const deleteBookmark = async (
   return bookmark;
 };
 
-export { getOneBookmark, deleteBookmark, getAllBookmarks, createBookmark };
+export {
+  getOneBookmark,
+  deleteBookmark,
+  getAllBookmarks,
+  createBookmark,
+  updateBookmark,
+};
