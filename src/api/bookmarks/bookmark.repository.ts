@@ -1,5 +1,9 @@
+import { IErrorPayload } from '../../common/interfaces/error-payload.interface';
+import { InvalidFunctionInputError } from '../../errors/invalid-function-input.error';
+import { InvalidUserInputError } from '../../errors/invalid-user-input.error';
 import { NotFoundError } from '../../errors/not-found.error';
 import { BookmarkDocument, BookmarkModel } from './database/bookmark.entity';
+import { ICreateBookmarkInput } from './interfaces/create-bookmark-input.interface';
 import { IFilterBookmarks } from './interfaces/filter-bookmarks-input.interface';
 import { IGetOneBookmark } from './interfaces/get-one-bookmark-input.interface';
 
@@ -53,6 +57,48 @@ const getAllBookmarks = async (
   return bookmarks;
 };
 
+const createBookmark = async (
+  input: ICreateBookmarkInput,
+): Promise<BookmarkDocument> => {
+  const { name, tags, url, userId, description } = input;
+
+  const errors: IErrorPayload[] = [];
+
+  if (!name) {
+    errors.push({
+      message: 'name cannot be empty',
+      field: 'name',
+    });
+  }
+
+  if (!userId) {
+    throw new InvalidFunctionInputError();
+  }
+
+  if (!url) {
+    errors.push({
+      message: 'url cannot be empty',
+      field: 'url',
+    });
+  }
+
+  if (errors.length !== 0) {
+    throw new InvalidUserInputError(errors);
+  }
+
+  const bookmark = BookmarkModel.build({
+    name,
+    tags,
+    url,
+    userId,
+    description,
+  });
+
+  await bookmark.save();
+
+  return bookmark;
+};
+
 const deleteBookmark = async (
   input: IGetOneBookmark,
 ): Promise<BookmarkDocument> => {
@@ -63,4 +109,4 @@ const deleteBookmark = async (
   return bookmark;
 };
 
-export { getOneBookmark, deleteBookmark, getAllBookmarks };
+export { getOneBookmark, deleteBookmark, getAllBookmarks, createBookmark };
