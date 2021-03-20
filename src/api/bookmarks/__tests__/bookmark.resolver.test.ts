@@ -106,6 +106,22 @@ describe('BookmarkResolver', () => {
       }
     `;
 
+  const DELETE_BOOKMARK_MUTATION = `
+      mutation($input:GetOneBookmarkInput!){
+          deleteBookmark(input:$input){
+            id
+            name
+            description
+            tags{
+                id
+                name
+                slug
+            }
+            url
+        }
+      }
+    `;
+
   describe('bookmark', () => {
     it('throws an error if the user is not logged in', async () => {
       const id = mongoose.Types.ObjectId().toHexString();
@@ -343,6 +359,111 @@ describe('BookmarkResolver', () => {
       expect(loggedRes.body.data).toBeDefined();
       expect(loggedRes.body.data.bookmarks.length).toEqual(1);
       expect(loggedRes.body.data.bookmarks[0].id).toEqual(bookmark1.id);
+    });
+  });
+
+  describe('deleteBookmark', () => {
+    it('throws an error if the user is not logged in', async () => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const input: IGetOneBookmark = {
+        id,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({ query: DELETE_BOOKMARK_MUTATION, variables: { input } });
+
+      expect(res.body.errors).toBeDefined();
+      expect(res.body.data).toBeNull();
+    });
+
+    it('throws an error if given an id it cannot find a bookmark', async () => {
+      const newUser = await signUpUserSetup();
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const loginInput: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: SIGN_IN_MUTATION,
+          variables: { input: loginInput },
+        });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+      expect(res.body.data.signIn.user.username).toEqual(newUser.username);
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+
+      const jwtToken = res.body.data.signIn.jwt;
+
+      const input: IGetOneBookmark = {
+        id,
+      };
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: DELETE_BOOKMARK_MUTATION,
+          variables: { input },
+        });
+
+      expect(loggedRes.body.errors).toBeDefined();
+      expect(loggedRes.body.data).toBeNull();
+    });
+
+    it('successfully deletes a bookmark if the user is logged and the id is valid', async () => {
+      const newUser = await signUpUserSetup();
+      const bookmark = await createBookmarkSetup(newUser.id);
+
+      const loginInput: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: SIGN_IN_MUTATION,
+          variables: { input: loginInput },
+        });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+      expect(res.body.data.signIn.user.username).toEqual(newUser.username);
+      expect(res.body.data.signIn.user.email).toEqual(newUser.email);
+
+      const jwtToken = res.body.data.signIn.jwt;
+
+      const input: IGetOneBookmark = {
+        id: bookmark.id,
+      };
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: DELETE_BOOKMARK_MUTATION,
+          variables: { input },
+        });
+
+      expect(loggedRes.body.errors).toBeUndefined();
+      expect(loggedRes.body.data).toBeDefined();
+      expect(loggedRes.body.data.deleteBookmark.id).toEqual(bookmark.id);
+      expect(loggedRes.body.data.deleteBookmark.name).toEqual(bookmark.name);
+      expect(loggedRes.body.data.deleteBookmark.description).toEqual(
+        bookmark.description,
+      );
+      expect(loggedRes.body.data.deleteBookmark.url).toEqual(bookmark.url);
     });
   });
 });
