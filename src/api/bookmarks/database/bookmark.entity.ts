@@ -4,15 +4,17 @@ import { TagDocument, TagModelName } from '../../tags/database/tag.entity';
 interface BuildBookmarkInput {
   name: string;
   description?: string;
-  tags: TagDocument[];
+  tags: mongoose.Types.ObjectId[];
+  url: string;
   userId: string;
 }
 
-interface BookmarkDocument extends mongoose.Document {
+export interface BookmarkDocument extends mongoose.Document {
   name: string;
   description?: string;
   tags: TagDocument[];
   userId: string;
+  url: string;
 }
 
 interface BookmarkModel extends mongoose.Model<BookmarkDocument> {
@@ -32,11 +34,14 @@ const bookmarkSchema = new mongoose.Schema(
       default: null,
     },
     tags: {
-      type: [mongoose.Types.ObjectId],
+      type: [{ type: mongoose.Types.ObjectId, ref: TagModelName }],
       default: [],
-      ref: TagModelName,
     },
     userId: {
+      type: String,
+      required: true,
+    },
+    url: {
       type: String,
       required: true,
     },
@@ -49,6 +54,12 @@ const bookmarkSchema = new mongoose.Schema(
 bookmarkSchema.statics.build = (input: BuildBookmarkInput) => {
   return new BookmarkModel(input);
 };
+
+bookmarkSchema.post('save', async function (doc, next) {
+  await doc.populate('tags').execPopulate();
+
+  next();
+});
 
 const BookmarkModel = mongoose.model<BookmarkDocument, BookmarkModel>(
   BookmarkModelName,
