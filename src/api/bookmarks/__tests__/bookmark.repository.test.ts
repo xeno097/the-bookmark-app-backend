@@ -47,6 +47,7 @@ describe('BookmarkRepository', () => {
 
   afterEach(async () => {
     await BookmarkModel.deleteMany({});
+    await TagModel.deleteMany({});
   });
 
   describe('getOneBookmark', () => {
