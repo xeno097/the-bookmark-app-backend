@@ -3,7 +3,7 @@ import { ICreateBookmarkInput } from './create-bookmark-input.interface';
 import { IGetOneBookmark } from './get-one-bookmark-input.interface';
 import { IUpdateBookmarkInput } from './update-bookmark-input.interface';
 
-export interface BookmarkQueries {
+export interface IBookmarkQueries {
   bookmark: (
     parent: any,
     args: { input: IGetOneBookmark },
@@ -18,7 +18,7 @@ export interface BookmarkQueries {
   ) => Promise<any[]>;
 }
 
-export interface BookmarkMutations {
+export interface IBookmarkMutations {
   createBookmark: (
     parent: any,
     args: { input: ICreateBookmarkInput },
