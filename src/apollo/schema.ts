@@ -82,5 +82,7 @@ export const typeDefs = gql`
     signUp(input: SignUpInput!): AuthPayload!
     signIn(input: SignInInput!): AuthPayload!
     signOut: Boolean!
+
+    deleteBookmark(input: GetOneTagInput!): Bookmark!
   }
 `;

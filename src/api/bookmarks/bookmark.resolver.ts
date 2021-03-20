@@ -2,9 +2,14 @@ import { authorizeUser } from '../../common/functions/authorize-user';
 import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custom-context.interface';
 import { getAllBookmarks, getOneBookmark } from './bookmark.repository';
 import { BookmarkDocument } from './database/bookmark.entity';
-import { IBookmarkQueries } from './interfaces/bookmark-resolver.interface';
+import {
+  IBookmarkMutations,
+  IBookmarkQueries,
+} from './interfaces/bookmark-resolver.interface';
+import { ICreateBookmarkInput } from './interfaces/create-bookmark-input.interface';
 import { IFilterBookmarks } from './interfaces/filter-bookmarks-input.interface';
 import { IGetOneBookmark } from './interfaces/get-one-bookmark-input.interface';
+import { IUpdateBookmarkInput } from './interfaces/update-bookmark-input.interface';
 
 const bookmark = async (
   parent: any,
@@ -43,9 +48,36 @@ const bookmarks = async (
   return bookmarks;
 };
 
+const createBookmark = async (
+  parent: any,
+  args: { input: ICreateBookmarkInput },
+  context: GqlCustomExecutionContext,
+  info: any,
+) => {};
+
+const updateBookmark = async (
+  parent: any,
+  args: { input: IUpdateBookmarkInput },
+  context: GqlCustomExecutionContext,
+  info: any,
+) => {};
+
+const deleteBookmark = async (
+  parent: any,
+  args: { input: IGetOneBookmark },
+  context: GqlCustomExecutionContext,
+  info: any,
+) => {};
+
 const bookmarkQueries: IBookmarkQueries = {
   bookmark,
   bookmarks,
 };
 
-export { bookmarkQueries };
+const bookmarkMutation: IBookmarkMutations = {
+  createBookmark,
+  updateBookmark,
+  deleteBookmark,
+};
+
+export { bookmarkQueries, bookmarkMutation, deleteBookmark };
