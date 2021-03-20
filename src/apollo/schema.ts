@@ -47,11 +47,26 @@ export const typeDefs = gql`
     password: String!
   }
 
+  type Bookmark {
+    id: String!
+    name: String!
+    description: String
+    tags: [Tag]!
+    url: String!
+  }
+
+  input GetOneBookmarkInput {
+    id: String!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
 
     self: User!
+
+    bookmark(input: GetOneBookmarkInput!): Bookmark!
+    bookmarks: [Bookmark]!
   }
 
   type Mutation {
