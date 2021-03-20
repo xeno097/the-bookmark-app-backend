@@ -2,11 +2,13 @@ import { BookmarkModel } from '../database/bookmark.entity';
 import mongoose from 'mongoose';
 import { IGetOneBookmark } from '../interfaces/get-one-bookmark-input.interface';
 import {
+  createBookmark,
   deleteBookmark,
   getAllBookmarks,
   getOneBookmark,
 } from '../bookmark.repository';
 import { IFilterBookmarks } from '../interfaces/filter-bookmarks-input.interface';
+import { ICreateBookmarkInput } from '../interfaces/create-bookmark-input.interface';
 
 describe('BookmarkRepository', () => {
   const createBookmarkSetup = async () => {
@@ -16,6 +18,7 @@ describe('BookmarkRepository', () => {
       name: 'test bookmark',
       tags: [],
       userId,
+      url: 'a url for the bookmark',
       description: 'a random description',
     });
 
@@ -115,14 +118,17 @@ describe('BookmarkRepository', () => {
       expect(bookmarks[0].id).toEqual(testBookmark0.id);
       expect(bookmarks[0].userId).toEqual(testBookmark0.userId);
       expect(bookmarks[0].description).toEqual(testBookmark0.description);
-      expect(bookmarks[1].id).toEqual(testBookmark1.id);
+      expect(bookmarks[0].url).toEqual(testBookmark0.url);
 
+      expect(bookmarks[1].id).toEqual(testBookmark1.id);
       expect(bookmarks[1].userId).toEqual(testBookmark1.userId);
       expect(bookmarks[1].description).toEqual(testBookmark1.description);
-      expect(bookmarks[2].id).toEqual(testBookmark2.id);
+      expect(bookmarks[1].url).toEqual(testBookmark1.url);
 
+      expect(bookmarks[2].id).toEqual(testBookmark2.id);
       expect(bookmarks[2].userId).toEqual(testBookmark2.userId);
       expect(bookmarks[2].description).toEqual(testBookmark2.description);
+      expect(bookmarks[2].url).toEqual(testBookmark2.url);
     });
 
     it('returns an empty array if there are no results matching the given filter', async () => {
@@ -179,7 +185,79 @@ describe('BookmarkRepository', () => {
     });
   });
 
-  describe('createBookmark', () => {});
+  describe('createBookmark', () => {
+    it('throws an error if the name is empty', async (done) => {
+      const userId = mongoose.Types.ObjectId().toHexString();
+
+      const input: ICreateBookmarkInput = {
+        name: '',
+        tags: [],
+        url: 'the url of the guide',
+        userId,
+      };
+
+      try {
+        await createBookmark(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('throws an error if the userId is empty', async (done) => {
+      const input: ICreateBookmarkInput = {
+        name: 'a kubernetes guide',
+        tags: [],
+        url: 'the url of the guide',
+        userId: '',
+      };
+
+      try {
+        await createBookmark(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('throws an error if the url is empty', async (done) => {
+      const userId = mongoose.Types.ObjectId().toHexString();
+
+      const input: ICreateBookmarkInput = {
+        name: 'a kubernetes guide',
+        tags: [],
+        url: '',
+        userId,
+      };
+
+      try {
+        await createBookmark(input);
+      } catch (error) {
+        return done();
+      }
+
+      throw new Error('Test failed');
+    });
+
+    it('successfully creates a bookmark', async () => {
+      const userId = mongoose.Types.ObjectId().toHexString();
+
+      const input: ICreateBookmarkInput = {
+        name: 'a kubernetes guide',
+        tags: [],
+        url: 'the url of the guide',
+        userId,
+      };
+
+      const bookmark = await createBookmark(input);
+
+      expect(bookmark.name).toEqual(input.name);
+      expect(bookmark.url).toEqual(input.url);
+      expect(bookmark.userId).toEqual(input.userId);
+    });
+  });
 
   describe('updateBookmark', () => {});
 

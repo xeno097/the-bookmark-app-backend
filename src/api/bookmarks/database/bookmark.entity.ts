@@ -4,7 +4,8 @@ import { TagDocument, TagModelName } from '../../tags/database/tag.entity';
 interface BuildBookmarkInput {
   name: string;
   description?: string;
-  tags: TagDocument[];
+  tags: mongoose.Types.ObjectId[];
+  url: string;
   userId: string;
 }
 
@@ -13,6 +14,7 @@ export interface BookmarkDocument extends mongoose.Document {
   description?: string;
   tags: TagDocument[];
   userId: string;
+  url: string;
 }
 
 interface BookmarkModel extends mongoose.Model<BookmarkDocument> {
@@ -37,6 +39,10 @@ const bookmarkSchema = new mongoose.Schema(
       ref: TagModelName,
     },
     userId: {
+      type: String,
+      required: true,
+    },
+    url: {
       type: String,
       required: true,
     },
