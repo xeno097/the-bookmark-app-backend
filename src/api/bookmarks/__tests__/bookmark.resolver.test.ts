@@ -512,6 +512,12 @@ describe('BookmarkResolver', () => {
 
       expect(loggedRes.body.errors).toBeUndefined();
       expect(loggedRes.body.data).toBeDefined();
+      expect(loggedRes.body.data.createBookmark.name).toEqual(input.name);
+      expect(loggedRes.body.data.createBookmark.url).toEqual(input.url);
+      expect(loggedRes.body.data.createBookmark.tags[0]).toBeDefined();
+      expect(loggedRes.body.data.createBookmark.tags[0].id).toEqual(tag.id);
+      expect(loggedRes.body.data.createBookmark.tags[0].name).toEqual(tag.name);
+      expect(loggedRes.body.data.createBookmark.tags[0].slug).toEqual(tag.slug);
     });
   });
 
