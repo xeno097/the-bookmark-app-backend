@@ -3,6 +3,7 @@ import { GqlCustomExecutionContext } from '../../common/interfaces/graphql-custo
 import {
   getAllBookmarks,
   getOneBookmark,
+  createBookmark as createBookmarkRepo,
   deleteBookmark as deleteBookmarkRepo,
 } from './bookmark.repository';
 import { BookmarkDocument } from './database/bookmark.entity';
@@ -20,7 +21,7 @@ const bookmark = async (
   args: { input: IGetOneBookmark },
   context: GqlCustomExecutionContext,
   info: any,
-): Promise<any> => {
+): Promise<BookmarkDocument> => {
   const { user } = context;
   const validatedUser = authorizeUser(user);
   const { input } = args;
@@ -57,7 +58,17 @@ const createBookmark = async (
   args: { input: ICreateBookmarkInput },
   context: GqlCustomExecutionContext,
   info: any,
-) => {};
+): Promise<BookmarkDocument> => {
+  const { user } = context;
+  const validatedUser = authorizeUser(user);
+  const { input } = args;
+
+  input.userId = validatedUser.id;
+
+  const createdBookmark = await createBookmarkRepo(input);
+
+  return createdBookmark;
+};
 
 const updateBookmark = async (
   parent: any,
@@ -71,7 +82,7 @@ const deleteBookmark = async (
   args: { input: IGetOneBookmark },
   context: GqlCustomExecutionContext,
   info: any,
-) => {
+): Promise<BookmarkDocument> => {
   const { user } = context;
   const validatedUser = authorizeUser(user);
   const { input } = args;
@@ -94,4 +105,4 @@ const bookmarkMutation: IBookmarkMutations = {
   deleteBookmark,
 };
 
-export { bookmarkQueries, bookmarkMutation, deleteBookmark };
+export { bookmarkQueries, bookmarkMutation, deleteBookmark, createBookmark };
