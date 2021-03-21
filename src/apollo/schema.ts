@@ -47,11 +47,49 @@ export const typeDefs = gql`
     password: String!
   }
 
+  type Bookmark {
+    id: String!
+    name: String!
+    description: String
+    tags: [Tag]!
+    url: String!
+  }
+
+  input GetOneBookmarkInput {
+    id: String!
+  }
+
+  input FilterBookmarksInput {
+    start: Int
+    limit: Int
+  }
+
+  input CreateBookmarkInput {
+    name: String!
+    description: String
+    tags: [ID]!
+    url: String!
+  }
+
+  input UpdateBookmarkPayload {
+    name: String
+    description: String
+    tags: [ID]
+  }
+
+  input UpdateBookmarkInput {
+    filter: GetOneBookmarkInput!
+    data: UpdateBookmarkPayload!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
 
     self: User!
+
+    bookmark(input: GetOneBookmarkInput!): Bookmark!
+    bookmarks(input: FilterBookmarksInput): [Bookmark]!
   }
 
   type Mutation {
@@ -62,5 +100,9 @@ export const typeDefs = gql`
     signUp(input: SignUpInput!): AuthPayload!
     signIn(input: SignInInput!): AuthPayload!
     signOut: Boolean!
+
+    createBookmark(input: CreateBookmarkInput!): Bookmark!
+    updateBookmark(input: UpdateBookmarkInput!): Bookmark!
+    deleteBookmark(input: GetOneBookmarkInput!): Bookmark!
   }
 `;
