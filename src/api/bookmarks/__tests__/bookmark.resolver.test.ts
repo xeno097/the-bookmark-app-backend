@@ -12,6 +12,7 @@ import { TagModel } from '../../tags/database/tag.entity';
 import { generateSlug } from '../../../common/functions/generate-slug';
 import crypto from 'crypto';
 import { IFilterBookmarks } from '../interfaces/filter-bookmarks-input.interface';
+import { ICreateBookmarkInput } from '../interfaces/create-bookmark-input.interface';
 
 describe('BookmarkResolver', () => {
   afterEach(async () => {
@@ -63,19 +64,19 @@ describe('BookmarkResolver', () => {
   };
 
   const SIGN_IN_MUTATION = `
-      mutation($input: SignInInput!) {
+    mutation($input: SignInInput!) {
         signIn(input: $input) {
-          jwt
-          user {
+            jwt
+            user {
             username
             email
-          }
+            }
         }
-      }
+    }
     `;
 
   const BOOKMARK_QUERY = `
-      query($input: GetOneBookmarkInput!){
+    query($input: GetOneBookmarkInput!){
         bookmark(input:$input){
             id
             name
@@ -87,11 +88,11 @@ describe('BookmarkResolver', () => {
             }
             url
         }
-      }
+    }
     `;
 
   const BOOKMARKS_QUERY = `
-      query($input: FilterBookmarksInput){
+    query($input: FilterBookmarksInput){
         bookmarks(input:$input){
             id
             name
@@ -102,13 +103,29 @@ describe('BookmarkResolver', () => {
                 slug
             }
             url
-          }
-      }
+        }
+    }
     `;
 
+  const CREATE_BOOKMARK_MUTATION = `
+    mutation($input:CreateBookmarkInput!){
+        createBookmark(input:$input){
+            id
+            name
+            description
+            tags{
+                id
+                name
+                slug
+            }
+            url
+        }
+    }
+      `;
+
   const DELETE_BOOKMARK_MUTATION = `
-      mutation($input:GetOneBookmarkInput!){
-          deleteBookmark(input:$input){
+    mutation($input:GetOneBookmarkInput!){
+        deleteBookmark(input:$input){
             id
             name
             description
@@ -359,6 +376,142 @@ describe('BookmarkResolver', () => {
       expect(loggedRes.body.data).toBeDefined();
       expect(loggedRes.body.data.bookmarks.length).toEqual(1);
       expect(loggedRes.body.data.bookmarks[0].id).toEqual(bookmark1.id);
+    });
+  });
+
+  describe('createBookmark', () => {
+    it('throws an error if the user is not logged in', async () => {
+      const input: ICreateBookmarkInput = {
+        name: '',
+        tags: [],
+        url: 'the url of the guide',
+      };
+
+      const loggedRes = await request(app).post(GRAPHQL_ENDPOINT).send({
+        query: CREATE_BOOKMARK_MUTATION,
+        variables: { input },
+      });
+
+      expect(loggedRes.body.errors).toBeDefined();
+      expect(loggedRes.body.data).toBeNull();
+    });
+
+    it('throws an error if the name is empty', async () => {
+      const newUser = await signUpUserSetup();
+
+      const loginInput: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: SIGN_IN_MUTATION,
+          variables: { input: loginInput },
+        });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+
+      const jwtToken = res.body.data.signIn.jwt;
+
+      const input: ICreateBookmarkInput = {
+        name: '',
+        tags: [],
+        url: 'the url of the guide',
+      };
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: CREATE_BOOKMARK_MUTATION,
+          variables: { input },
+        });
+
+      expect(loggedRes.body.errors).toBeDefined();
+      expect(loggedRes.body.data).toBeNull();
+    });
+
+    it('throws an error if the url is empty', async () => {
+      const newUser = await signUpUserSetup();
+
+      const loginInput: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: SIGN_IN_MUTATION,
+          variables: { input: loginInput },
+        });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+
+      const jwtToken = res.body.data.signIn.jwt;
+
+      const input: ICreateBookmarkInput = {
+        name: 'a name',
+        tags: [],
+        url: '',
+      };
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: CREATE_BOOKMARK_MUTATION,
+          variables: { input },
+        });
+
+      expect(loggedRes.body.errors).toBeDefined();
+      expect(loggedRes.body.data).toBeNull();
+    });
+
+    it('successfully creates a bookmark', async () => {
+      const newUser = await signUpUserSetup();
+      const tag = await createTagSetup();
+
+      const loginInput: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: SIGN_IN_MUTATION,
+          variables: { input: loginInput },
+        });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+
+      const jwtToken = res.body.data.signIn.jwt;
+
+      const input: ICreateBookmarkInput = {
+        name: 'a name',
+        tags: [tag.id],
+        url: 'the url of the guide',
+      };
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: CREATE_BOOKMARK_MUTATION,
+          variables: { input },
+        });
+
+      expect(loggedRes.body.errors).toBeUndefined();
+      expect(loggedRes.body.data).toBeDefined();
     });
   });
 
