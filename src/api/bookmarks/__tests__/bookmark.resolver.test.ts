@@ -13,6 +13,7 @@ import { generateSlug } from '../../../common/functions/generate-slug';
 import crypto from 'crypto';
 import { IFilterBookmarks } from '../interfaces/filter-bookmarks-input.interface';
 import { ICreateBookmarkInput } from '../interfaces/create-bookmark-input.interface';
+import { IUpdateBookmarkInput } from '../interfaces/update-bookmark-input.interface';
 
 describe('BookmarkResolver', () => {
   afterEach(async () => {
@@ -122,6 +123,22 @@ describe('BookmarkResolver', () => {
         }
     }
       `;
+
+  const UPDATE_BOOKMARK_MUTATION = `
+    mutation($input:UpdateBookmarkInput!){
+        updateBookmark(input:$input){
+            id
+            name
+            description
+            tags{
+                id
+                name
+                slug
+            }
+            url
+        }
+    }
+    `;
 
   const DELETE_BOOKMARK_MUTATION = `
     mutation($input:GetOneBookmarkInput!){
@@ -521,7 +538,121 @@ describe('BookmarkResolver', () => {
     });
   });
 
-  describe('updateBookmark', () => {});
+  describe('updateBookmark', () => {
+    it('throws an error if the user is not logged in', async () => {
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const input: IUpdateBookmarkInput = {
+        filter: {
+          id,
+        },
+        data: {},
+      };
+
+      const res = await request(app).post(GRAPHQL_ENDPOINT).send({
+        query: UPDATE_BOOKMARK_MUTATION,
+        variables: { input },
+      });
+
+      expect(res.body.errors).toBeDefined();
+      expect(res.body.data).toBeNull();
+    });
+
+    it('it throws an error if given an id it cannot find a bookmark', async () => {
+      const newUser = await signUpUserSetup();
+      const id = mongoose.Types.ObjectId().toHexString();
+
+      const loginInput: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: SIGN_IN_MUTATION,
+          variables: { input: loginInput },
+        });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+
+      const jwtToken = res.body.data.signIn.jwt;
+
+      const input: IUpdateBookmarkInput = {
+        filter: {
+          id,
+        },
+        data: {
+          name: 'a name',
+          tags: [],
+        },
+      };
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: UPDATE_BOOKMARK_MUTATION,
+          variables: { input },
+        });
+
+      expect(loggedRes.body.errors).toBeDefined();
+      expect(loggedRes.body.data).toBeNull();
+    });
+
+    it('it successfully updates a bookmark given a valid id and the user is logged in', async () => {
+      const newUser = await signUpUserSetup();
+      const bookmark = await createBookmarkSetup(newUser.id);
+      const tag = await createTagSetup();
+
+      const loginInput: ISignInInput = {
+        password: '1234567890',
+        username: newUser.username,
+      };
+
+      const res = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .send({
+          query: SIGN_IN_MUTATION,
+          variables: { input: loginInput },
+        });
+
+      expect(res.body.errors).toBeUndefined();
+      expect(res.body.data).toBeDefined();
+      expect(res.body.data.signIn.jwt).toBeDefined();
+
+      const jwtToken = res.body.data.signIn.jwt;
+
+      const input: IUpdateBookmarkInput = {
+        filter: {
+          id: bookmark.id,
+        },
+        data: {
+          name: 'a name',
+          tags: [tag.id],
+        },
+      };
+
+      const loggedRes = await request(app)
+        .post(GRAPHQL_ENDPOINT)
+        .set('Cookie', [`${AUTH_PROPERTY_KEY}=${jwtToken}`])
+        .send({
+          query: UPDATE_BOOKMARK_MUTATION,
+          variables: { input },
+        });
+
+      expect(loggedRes.body.errors).toBeUndefined();
+      expect(loggedRes.body.data).toBeDefined();
+      expect(loggedRes.body.data.updateBookmark.id).toEqual(input.filter.id);
+      expect(loggedRes.body.data.updateBookmark.name).toEqual(input.data.name);
+      expect(loggedRes.body.data.updateBookmark.tags).toBeDefined();
+      expect(loggedRes.body.data.updateBookmark.tags[0].id).toEqual(tag.id);
+      expect(loggedRes.body.data.updateBookmark.tags[0].name).toEqual(tag.name);
+      expect(loggedRes.body.data.updateBookmark.tags[0].slug).toEqual(tag.slug);
+    });
+  });
 
   describe('deleteBookmark', () => {
     it('throws an error if the user is not logged in', async () => {
