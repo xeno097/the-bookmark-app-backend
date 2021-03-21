@@ -64,6 +64,13 @@ export const typeDefs = gql`
     limit: Int
   }
 
+  input CreateBookmarkInput {
+    name: String!
+    description: String
+    tags: [ID]!
+    url: String!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
@@ -83,6 +90,7 @@ export const typeDefs = gql`
     signIn(input: SignInInput!): AuthPayload!
     signOut: Boolean!
 
+    createBookmark(input: CreateBookmarkInput!): Bookmark!
     deleteBookmark(input: GetOneBookmarkInput!): Bookmark!
   }
 `;
