@@ -1,3 +1,4 @@
+import { validateId } from '../../common/functions/validate-id';
 import { IErrorPayload } from '../../common/interfaces/error-payload.interface';
 import { InvalidUserInputError } from '../../errors/invalid-user-input.error';
 import { NotFoundError } from '../../errors/not-found.error';
@@ -9,6 +10,8 @@ import { PasswordManager } from './utils/password.util';
 
 const getOneUser = async (input: IGetOneUser): Promise<UserDocument> => {
   const { id } = input;
+
+  validateId(id);
 
   const user = await UserModel.findById(id);
 
