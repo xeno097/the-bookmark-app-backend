@@ -4,6 +4,6 @@ export interface ICreateBookmarkInput {
   name: string;
   description?: string;
   tags: mongoose.Types.ObjectId[];
-  userId: string;
+  userId?: string;
   url: string;
 }
