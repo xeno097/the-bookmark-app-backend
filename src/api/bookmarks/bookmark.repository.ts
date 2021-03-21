@@ -1,3 +1,4 @@
+import { validateId } from '../../common/functions/validate-id';
 import { IErrorPayload } from '../../common/interfaces/error-payload.interface';
 import { InvalidFunctionInputError } from '../../errors/invalid-function-input.error';
 import { InvalidUserInputError } from '../../errors/invalid-user-input.error';
@@ -15,7 +16,7 @@ const getOneBookmark = async (
 
   let filter = {};
 
-  if (id) {
+  if (validateId(id)) {
     filter = { _id: id };
   }
 

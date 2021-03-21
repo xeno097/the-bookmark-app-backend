@@ -1,4 +1,5 @@
 import { generateSlug } from '../../common/functions/generate-slug';
+import { validateId } from '../../common/functions/validate-id';
 import { InvalidFunctionInputError } from '../../errors/invalid-function-input.error';
 import { NotFoundError } from '../../errors/not-found.error';
 import { TagDocument, TagModel } from './database/tag.entity';
@@ -16,6 +17,7 @@ const getOneTag = async (input: IGetOneTagInput): Promise<TagDocument> => {
   let filterInput = {};
 
   if (id) {
+    validateId(id);
     filterInput = { _id: id };
   }
 
