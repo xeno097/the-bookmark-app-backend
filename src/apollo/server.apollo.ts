@@ -1,8 +1,7 @@
 import { ApolloServer } from 'apollo-server-express';
 import {
   bookmarkQueries,
-  deleteBookmark,
-  createBookmark,
+  bookmarkMutations,
 } from '../api/bookmarks/bookmark.resolver';
 import { tagQueries, tagMutations } from '../api/tags/tag.resolver';
 import { userMutations, userQueries } from '../api/users/user.resolver';
@@ -22,8 +21,7 @@ const apolloServer = new ApolloServer({
     Mutation: {
       ...tagMutations,
       ...userMutations,
-      deleteBookmark,
-      createBookmark,
+      ...bookmarkMutations,
     },
   },
 });

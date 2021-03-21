@@ -521,6 +521,8 @@ describe('BookmarkResolver', () => {
     });
   });
 
+  describe('updateBookmark', () => {});
+
   describe('deleteBookmark', () => {
     it('throws an error if the user is not logged in', async () => {
       const id = mongoose.Types.ObjectId().toHexString();

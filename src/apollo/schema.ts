@@ -71,6 +71,17 @@ export const typeDefs = gql`
     url: String!
   }
 
+  input UpdateBookmarkPayload {
+    name: String
+    description: String
+    tags: [ID]
+  }
+
+  input UpdateBookmarkInput {
+    filter: GetOneBookmarkInput!
+    data: UpdateBookmarkPayload!
+  }
+
   type Query {
     tag(input: GetOneTagInput!): Tag!
     tags: [Tag]
@@ -91,6 +102,7 @@ export const typeDefs = gql`
     signOut: Boolean!
 
     createBookmark(input: CreateBookmarkInput!): Bookmark!
+    updateBookmark(input: UpdateBookmarkInput!): Bookmark!
     deleteBookmark(input: GetOneBookmarkInput!): Bookmark!
   }
 `;

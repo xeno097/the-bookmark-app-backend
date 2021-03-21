@@ -99,10 +99,10 @@ const bookmarkQueries: IBookmarkQueries = {
   bookmarks,
 };
 
-const bookmarkMutation: IBookmarkMutations = {
+const bookmarkMutations: IBookmarkMutations = {
   createBookmark,
   updateBookmark,
   deleteBookmark,
 };
 
-export { bookmarkQueries, bookmarkMutation, deleteBookmark, createBookmark };
+export { bookmarkQueries, bookmarkMutations };
