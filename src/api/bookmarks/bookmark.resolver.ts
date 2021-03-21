@@ -4,6 +4,7 @@ import {
   getAllBookmarks,
   getOneBookmark,
   createBookmark as createBookmarkRepo,
+  updateBookmark as updateBookmarkRepo,
   deleteBookmark as deleteBookmarkRepo,
 } from './bookmark.repository';
 import { BookmarkDocument } from './database/bookmark.entity';
@@ -75,7 +76,17 @@ const updateBookmark = async (
   args: { input: IUpdateBookmarkInput },
   context: GqlCustomExecutionContext,
   info: any,
-) => {};
+): Promise<BookmarkDocument> => {
+  const { user } = context;
+  const validatedUser = authorizeUser(user);
+  const { input } = args;
+
+  input.filter.userId = validatedUser.id;
+
+  const updatedBookmark = await updateBookmarkRepo(input);
+
+  return updatedBookmark;
+};
 
 const deleteBookmark = async (
   parent: any,

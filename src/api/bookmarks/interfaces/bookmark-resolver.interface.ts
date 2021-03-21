@@ -17,7 +17,7 @@ export interface IBookmarkQueries {
     args: { input: IFilterBookmarks },
     context: GqlCustomExecutionContext,
     info: any,
-  ) => Promise<any[]>;
+  ) => Promise<BookmarkDocument[]>;
 }
 
 export interface IBookmarkMutations {
@@ -26,17 +26,17 @@ export interface IBookmarkMutations {
     args: { input: ICreateBookmarkInput },
     context: GqlCustomExecutionContext,
     info: any,
-  ) => Promise<any>;
+  ) => Promise<BookmarkDocument>;
   updateBookmark: (
     parent: any,
     args: { input: IUpdateBookmarkInput },
     context: GqlCustomExecutionContext,
     info: any,
-  ) => Promise<any>;
+  ) => Promise<BookmarkDocument>;
   deleteBookmark: (
     parent: any,
     args: { input: IGetOneBookmark },
     context: GqlCustomExecutionContext,
     info: any,
-  ) => Promise<any>;
+  ) => Promise<BookmarkDocument>;
 }
