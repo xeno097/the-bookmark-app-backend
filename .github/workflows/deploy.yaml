@@ -18,5 +18,5 @@ jobs:
           usedocker: true
         env:
           NODE_ENV: production
-          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-          JWT_SECRET: ${{secrets.JWT_SECRET}}
+          HD_DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+          HD_JWT_SECRET: ${{secrets.JWT_SECRET}}
