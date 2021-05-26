@@ -48,7 +48,7 @@ export const typeDefs = gql`
   }
 
   type Bookmark {
-    id: String!
+    id: ID!
     name: String!
     description: String
     tags: [Tag]!
@@ -56,7 +56,7 @@ export const typeDefs = gql`
   }
 
   input GetOneBookmarkInput {
-    id: String!
+    id: ID!
   }
 
   input FilterBookmarksInput {
@@ -84,12 +84,12 @@ export const typeDefs = gql`
 
   type Query {
     tag(input: GetOneTagInput!): Tag!
-    tags: [Tag]
+    tags: [Tag!]!
 
     self: User!
 
     bookmark(input: GetOneBookmarkInput!): Bookmark!
-    bookmarks(input: FilterBookmarksInput): [Bookmark]!
+    bookmarks(input: FilterBookmarksInput): [Bookmark!]!
   }
 
   type Mutation {
