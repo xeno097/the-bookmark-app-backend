@@ -1,6 +1,6 @@
 # The bookmark app backend
 
-<a href="https://www.npmjs.com/package/express"><img src="https://img.shields.io/badge/express-v4-green" alt="express" /></a> <a href="https://www.npmjs.com/package/express"><img src="https://img.shields.io/badge/apollo--server--express-v2-blueviolet" alt="apollo-server-express" /></a> <a href="https://www.npmjs.com/package/jest"><img src="https://img.shields.io/badge/jest-v27-yellow" alt="jest" /></a> <a href="https://www.npmjs.com/package/typescript"><img src="https://img.shields.io/badge/typescript-v4-blue" alt="typescript" /></a> <a href="https://www.npmjs.com/package/mongoose"><img src="https://img.shields.io/badge/mongoose-v5.10-green" alt="mongoose" /></a> <a href="https://dashboard.heroku.com/apps"><img src="https://img.shields.io/badge/heroku-blueviolet" alt="heorku" /></a>
+<a href="https://nodejs.org/en/"><img src="https://img.shields.io/badge/node--js-v12-green" alt="node-js" /></a> <a href="https://www.npmjs.com/package/express"><img src="https://img.shields.io/badge/express-v4-green" alt="express" /></a> <a href="https://www.npmjs.com/package/express"><img src="https://img.shields.io/badge/apollo--server--express-v2-blueviolet" alt="apollo-server-express" /></a> <a href="https://www.npmjs.com/package/jest"><img src="https://img.shields.io/badge/jest-v27-yellow" alt="jest" /></a> <a href="https://www.npmjs.com/package/typescript"><img src="https://img.shields.io/badge/typescript-v4-blue" alt="typescript" /></a> <a href="https://www.npmjs.com/package/mongoose"><img src="https://img.shields.io/badge/mongoose-v5.10-green" alt="mongoose" /></a> <a href="https://dashboard.heroku.com"><img src="https://img.shields.io/badge/heroku-blueviolet" alt="heroku" /></a>
 
 ## Description
 
@@ -11,7 +11,7 @@ It was also a good opportunity to use github actions to automate testing and dep
 
 ### Local machine
 
-Install project dependencies running the following command:
+With npm installed on your machine, install project dependencies running the following command:
 
 ```cmd
 npm i
