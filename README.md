@@ -1,0 +1,52 @@
+# The bookmark app backend
+
+<a href="https://www.npmjs.com/package/express"><img src="https://img.shields.io/badge/express-v4-green" alt="express" /></a> <a href="https://www.npmjs.com/package/express"><img src="https://img.shields.io/badge/apollo--server--express-v2-blueviolet" alt="apollo-server-express" /></a> <a href="https://www.npmjs.com/package/jest"><img src="https://img.shields.io/badge/jest-v27-yellow" alt="jest" /></a> <a href="https://www.npmjs.com/package/typescript"><img src="https://img.shields.io/badge/typescript-v4-blue" alt="typescript" /></a> <a href="https://www.npmjs.com/package/mongoose"><img src="https://img.shields.io/badge/mongoose-v5.10-green" alt="mongoose" /></a> <a href="https://dashboard.heroku.com/apps"><img src="https://img.shields.io/badge/heroku-blueviolet" alt="heorku" /></a>
+
+## Description
+
+The bookmark app backend is a simple project used as practice ground for using jest and supertest to test a graphql api that uses cookies for users authorization.
+It was also a good opportunity to use github actions to automate testing and deployment to heroku just for fun.
+
+## How to run the project
+
+### Local machine
+
+Install project dependencies running the following command:
+
+```cmd
+npm i
+```
+
+#### Production mode
+
+```cmd
+npm run start
+```
+
+#### Development mode
+
+The following command runs the project with hot reload enabled everytime a new change is saved.
+
+```cmd
+npm run start:dev
+```
+
+### Docker
+
+Open a terminal in the root directory of the project
+
+Build a docker image of the project with the following command:
+
+```cmd
+docker build -t <your-docker-image-name> .
+```
+
+Then run a container using the newly created image:
+
+```text
+docker run -d -p 3000:3000 --env PORT=3000 --env JWT_SECRET=<your-secret-of-choice> --env DB_CONNECTION_STRING=<your-mongo-db-connection-uri> --name <your-container-name-of-choice> <your-docker-image-name>
+```
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
