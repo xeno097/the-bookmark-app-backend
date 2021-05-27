@@ -41,11 +41,15 @@ Build a docker image of the project with the following command:
 docker build -t <your-docker-image-name> .
 ```
 
+where `your-docker-image-name` is the name of the image created after the building process.
+
 Then run a container using the newly created image:
 
 ```text
 docker run -d -p 3000:3000 --env PORT=3000 --env JWT_SECRET=<your-secret-of-choice> --env DB_CONNECTION_STRING=<your-mongo-db-connection-uri> --name <your-container-name-of-choice> <your-docker-image-name>
 ```
+
+where `<your-container-name-of-choice>` is the identifier that docker will assign to the running container and `<your-docker-image-name>` is the same image name used in the previous step
 
 ## License
 
