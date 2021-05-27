@@ -17,6 +17,12 @@ Install project dependencies running the following command:
 npm i
 ```
 
+Create a `.env` file in the root of the project that holds the following variables:
+
+- `PORT`: the port where the project will be running.
+- `DB_CONNECTION_STRING`: the mongodb uri used to connect the project to a mongodb database.
+- `JWT_SECRET`: the string used to hash passwords.
+
 #### Production mode
 
 ```cmd
